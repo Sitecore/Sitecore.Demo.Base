@@ -72,17 +72,6 @@ stages:
       vmImage: 'ubuntu-18.04'
     steps:
     - template: version.yml
-    - task: AzureCLI@2
-      displayName: 'Download Module Assets'
-      inputs:
-        azureSubscription: '$(azure.subscription)'
-        scriptType: 'pscore'
-        scriptLocation: 'inlineScript'
-        inlineScript: |
-          az --version
-          az account show
-          ./tools/download-wdps.ps1
-        workingDirectory: '$(Build.SourcesDirectory)\docker'
     - task: DockerCompose@0
       displayName: "Docker Compose Build"
       condition: succeeded()
