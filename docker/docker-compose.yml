@@ -1,0 +1,52 @@
+version: '2.4'
+
+services:
+  sql:
+    image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-mssql:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
+    isolation: hyperv
+    build:
+      context: .\images\windows\demo-xp-mssql
+      args:
+        BASE_IMAGE: ${REGISTRY}community/sitecore-xp0-custom-sxa-jss-ps-mssql:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}
+        DEF_ASSETS: ${REGISTRY}community/modules/custom-def-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        DEF_SFDC_ASSETS: ${REGISTRY}community/modules/custom-def-sfdc-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        SFMC_BDE_ASSETS: ${REGISTRY}community/modules/custom-sfmc-bde-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        DAM_ASSETS: ${REGISTRY}community/modules/custom-dam-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        CMP_ASSETS: ${REGISTRY}community/modules/custom-cmp-xp-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        XGEN:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+    mem_limit: 4GB
+    ports:
+      - "44010:1433"
+    environment:
+      SA_PASSWORD: ${SQL_SA_PASSWORD}
+      ACCEPT_EULA: "Y"
+  cm: 
+    image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-cm:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
+    isolation: hyperv
+    build:
+      context: .\images\windows\demo-xp-cm
+      args:
+        BASE_IMAGE: ${REGISTRY}community/sitecore-xp0-custom-sxa-jss-ps-cm:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}
+        DEF_ASSETS: ${REGISTRY}community/modules/custom-def-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        DEF_SFDC_ASSETS: ${REGISTRY}community/modules/custom-def-sfdc-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        SFMC_BDE_ASSETS: ${REGISTRY}community/modules/custom-sfmc-bde-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        SFMC_CE_ASSETS: ${REGISTRY}community/modules/custom-sfmc-ce-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        DAM_ASSETS: ${REGISTRY}community/modules/custom-dam-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        CMP_ASSETS: ${REGISTRY}community/modules/custom-cmp-xp-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        XGEN:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+    entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\iis\\Development.ps1 -WatchDirectoryParameters @{ Path = 'C:\\src'; Destination = 'C:\\inetpub\\wwwroot'; ExcludeFiles = @('C:\\src\\Web.config'); }"
+    mem_limit: 4G
+    ports:
+      - "44001:80"
+  cd:
+    image: ${REGISTRY}demo/base/lighthouse-xp1-modules-base-cd:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
+    isolation: hyperv
+    build:
+      context: .\images\windows\demo-xp-cd
+      args:
+        BASE_IMAGE: ${REGISTRY}community/sitecore-xp1-custom-sxa-jss-ps-cd:10.0.0-ltsc2019
+        DAM_ASSETS: ${REGISTRY}community/modules/custom-dam-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+    entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\iis\\Development.ps1 -WatchDirectoryParameters @{ Path = 'C:\\src'; Destination = 'C:\\inetpub\\wwwroot'; ExcludeFiles = @('C:\\src\\Web.config'); }"
+    mem_limit: 4G
+    ports:
+      - "44001:80"

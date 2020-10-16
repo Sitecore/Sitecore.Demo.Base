@@ -1,0 +1,24 @@
+steps:
+- task: GitVersion@5
+  inputs:
+    runtime: 'core'
+    configFilePath: 'docker/GitVersion.yml'
+    updateAssemblyInfo: true
+- task: PowerShell@2
+  displayName: 'Set correct image tag'
+  inputs:
+    targetType: 'inline'
+    script: 'echo "##vso[task.setvariable variable=tag]$(GitVersion.MajorMinorPatch)"'
+  condition: eq(variables['GitVersion.PreReleaseLabel'], '')
+- task: PowerShell@2
+  displayName: 'Tag the PR without the version number'
+  inputs:
+    targetType: 'inline'
+    script: 'echo "##vso[task.setvariable variable=tag]$(GitVersion.PreReleaseLabel)"'
+  condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
+- task: PowerShell@2
+  displayName: 'Set additional image tag for PR'
+  inputs:
+    targetType: 'inline'
+    script: 'echo "##vso[task.setvariable variable=additionalImageTags]$(GitVersion.PreReleaseLabel)"'
+  condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))

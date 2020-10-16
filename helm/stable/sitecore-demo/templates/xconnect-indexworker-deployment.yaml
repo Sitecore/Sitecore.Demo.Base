@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: xconnect-indexworker
+  name: xconnect-indexworker
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+  selector:
+    app: xconnect-indexworker
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: xconnect-indexworker
+  name: xconnect-indexworker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xconnect-indexworker
+  template:
+    metadata:
+      labels:
+        app: xconnect-indexworker
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": windows
+      containers:
+        - command:
+            - powershell.exe
+            - -NoLogo
+            - -NoProfile
+            - -File
+            - C:\tools\entrypoints\worker\Development.ps1
+          image: "sitecoredemocontainers.azurecr.io/sitecoredemo-indexworker:{{ $.Chart.AppVersion }}"
+          env:
+            - name: Database_Username
+              valueFrom:
+                secretKeyRef:
+                  name: sitecore-database
+                  key: sitecore-databaseusername.txt
+            - name: Database_Password
+              valueFrom:
+                secretKeyRef:
+                  name: sitecore-database
+                  key: sitecore-databasepassword.txt
+            - name: SITECORE_LICENSE
+              valueFrom:
+                secretKeyRef:
+                  name: sitecore-license
+                  key: sitecore-license.txt
+            - name: SITECORE_CONNECTIONSTRINGS_COLLECTION
+              value: Data Source=sql;Initial Catalog=Sitecore.Xdb.Collection.ShardMapManager;User ID=$(Database_Username);Password=$(Database_Password)
+            - name: SITECORE_CONNECTIONSTRINGS_SOLRCORE
+              value: "http://solr:8983/solr/sitecore_xdb"
+            - name: SITECORE_SITECORE__XCONNECT__SEARCHINDEXER__SERVICES__SOLR.SOLRREADERSETTINGS__OPTIONS__REQUIREHTTPS
+              value: "false"
+            - name: SITECORE_SITECORE__XCONNECT__SEARCHINDEXER__SERVICES__SOLR.SOLRWRITERSETTINGS__OPTIONS__REQUIREHTTPS
+              value: "false"
+          name: xconnect-indexworker
+          ports:
+            - containerPort: 80
+          resources: {}
+      restartPolicy: Always
+status: {}

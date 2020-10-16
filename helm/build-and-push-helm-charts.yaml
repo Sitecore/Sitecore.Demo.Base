@@ -1,0 +1,46 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- main
+
+resources:
+- repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  tag: '$(Build.BuildId)'
+  HELM_EXPERIMENTAL_OCI: 1
+
+stages:
+- stage: build
+  displayName: Build and Push
+  jobs:
+  - job: job_helm
+    displayName: Helm Publish
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: AzureCLI@2
+      displayName: Login to Azure Container Registry
+      inputs:
+        azureSubscription: "$(Azure.RM)"
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          ACCESS_TOKEN=$(az acr login --name $(Azure.Registry.Uri) --expose-token --output tsv --query accessToken)
+          echo $ACCESS_TOKEN | helm registry login $(Azure.Registry.Uri) -u 00000000-0000-0000-0000-000000000000 --password-stdin
+
+    - task: HelmInstaller@1
+      inputs:
+        helmVersionToInstall: 'latest'
+    - bash: |
+        for chart in $(ls -d helm/stable/*)
+        do
+          echo "found chart: $chart";
+          helm dependency build $chart
+          version=$( cat "$chart/Chart.yaml" | grep -Po 'version: \K.*' | sort | uniq )
+          helm chart save $chart $(Azure.Registry.Uri)/$chart:$version
+          helm chart push $(Azure.Registry.Uri)/$chart:$version
+        done

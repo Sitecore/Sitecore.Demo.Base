@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "windows-hosts-writer": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "hosts_path": "C:\\Windows\\System32\\drivers\\etc\\hosts"
+      }
+    }
+  }
+}

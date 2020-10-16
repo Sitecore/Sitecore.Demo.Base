@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: sitecore-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  tls:
+    - hosts:
+        - "{{.Release.Namespace}}-cm.sitecoredemo.com"
+        - "{{.Release.Namespace}}.sitecoredemo.com"
+      secretName: {{.Release.Namespace}}-ingress-tls
+  rules:
+    - host: "{{.Release.Namespace}}-cm.sitecoredemo.com"
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: cm
+              servicePort: 80
+    - host: "{{.Release.Namespace}}.sitecoredemo.com"
+      http:
+          paths:
+          - path: /
+            backend:
+              serviceName: cd
+              servicePort: 80

@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: sql
+  name: sql
+spec:
+  ports:
+    - name: tcp
+      port: 1433
+      targetPort: 1433
+  type: ClusterIP
+  selector:
+    app: sql
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sql
+  name: sql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sql
+  template:
+    metadata:
+      labels:
+        app: sql
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": windows
+      containers:
+        - env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sitecore-admin
+                  key: sitecore-adminpassword.txt
+            - name: USER_PASSWORD 
+              value: "{{ .Values.sitecore.users.user.password }}"
+            - name: ADMIN_PASSWORD 
+              value: "{{ .Values.sitecore.users.adminuser.password }}"
+            - name: ADMIN_USER_NAME 
+              value: "{{ .Values.sitecore.users.adminuser.name }}"
+            - name: DISABLE_DEFAULT_ADMIN 
+              value: '{{ .Values.sitecore.users.admin.disabled }}'
+          image: "sitecoredemocontainers.azurecr.io/sitecoredemo-sql:{{ $.Chart.AppVersion }}"
+          volumeMounts:
+            - mountPath: "data"
+              name: volume
+          name: sql
+          ports:
+            - containerPort: 1433
+          resources: {}
+      volumes:
+        - name: volume
+          persistentVolumeClaim:
+            claimName: azure-managed-disk

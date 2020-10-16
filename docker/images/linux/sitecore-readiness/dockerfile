@@ -1,0 +1,8 @@
+FROM mcr.microsoft.com/powershell:7.0.1-nanoserver-1809
+
+ENV host=placeholder          
+ENV port=placeholder
+
+COPY test-connection.ps1 /
+
+ENTRYPOINT [ "pwsh", "test-connection.ps1" ]

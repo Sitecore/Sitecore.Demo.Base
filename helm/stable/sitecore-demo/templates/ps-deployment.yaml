@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ps
+  name: ps
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+  selector:
+    app: ps
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ps
+  name: ps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ps
+  template:
+    metadata:
+      labels:
+        app: ps
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": windows
+      containers:
+        - image: "sitecoredemocontainers.azurecr.io/sitecoredemo-ps:{{ $.Chart.AppVersion }}"
+          env:
+            - name: Database_Username
+              valueFrom:
+                secretKeyRef:
+                  name: sitecore-database
+                  key: sitecore-databaseusername.txt
+            - name: Database_Password
+              valueFrom:
+                secretKeyRef:
+                  name: sitecore-database
+                  key: sitecore-databasepassword.txt
+            - name: SITECORE_LICENSE
+              valueFrom:
+                secretKeyRef:
+                  name: sitecore-license
+                  key: sitecore-license.txt
+            - name: CONN_STRING_CORE
+              value: Data Source=sql;Initial Catalog=Sitecore.Core;User ID=$(Database_Username);Password=$(Database_Password)
+            - name: CONN_STRING_MASTER
+              value: Data Source=sql;Initial Catalog=Sitecore.Master;User ID=$(Database_Username);Password=$(Database_Password)
+            - name: CONN_STRING_WEB
+              value: Data Source=sql;Initial Catalog=Sitecore.Web;User ID=$(Database_Username);Password=$(Database_Password)
+          name: ps
+          ports:
+            - containerPort: 80
+          resources: {}
+      restartPolicy: Always
+status: {}

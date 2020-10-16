@@ -1,0 +1,21 @@
+version: '2.4'
+
+services:
+  sql:
+    image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-mssql:${SITECORE_VERSION}-linux-${BUILD_NUMBER}
+    build:
+      context: images/linux/demo-xp-mssql
+      args:
+        BASE_IMAGE: ${REGISTRY}community/sitecore-xp0-custom-sxa-ps-mssql:${SITECORE_VERSION}-linux
+        DEF_ASSETS: ${REGISTRY}community/modules/custom-def-assets:${SITECORE_VERSION}-linux
+        DEF_SFDC_ASSETS: ${REGISTRY}community/modules/custom-def-sfdc-assets:${SITECORE_VERSION}-linux
+        SFMC_BDE_ASSETS: ${REGISTRY}community/modules/custom-sfmc-bde-assets:${SITECORE_VERSION}-linux
+        DAM_ASSETS: ${REGISTRY}community/modules/custom-dam-assets:${SITECORE_VERSION}-linux
+        CMP_ASSETS: ${REGISTRY}community/modules/custom-cmp-xp-assets:${SITECORE_VERSION}-linux
+        XGEN:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-linux
+    mem_limit: 4GB
+    ports:
+      - "44010:1433"
+    environment:
+      SA_PASSWORD: ${SQL_SA_PASSWORD}
+      ACCEPT_EULA: "Y"
