@@ -67,5 +67,8 @@ tolerations: []
 affinity: {}
 
 admin:
-  username: superuser
-  password: b
+  username: ""
+  password: ""
+
+dam:
+  url: ""
