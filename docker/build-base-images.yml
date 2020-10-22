@@ -22,10 +22,14 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      name: docker
-      demands:
-        - Agent.OS -equals Windows_NT
+      name: docker-ltsc2019-agents
     steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '2.1.x'
+        installationPath: 'c:/program files/dotnet'
+        performMultiLevelLookup: true    
     - template: version.yml
     - task: DockerCompose@0
       displayName: "Docker Compose Build"
@@ -69,8 +73,12 @@ stages:
     timeoutInMinutes: 60
     displayName: 'Build Linux Images'
     pool:
-      vmImage: 'ubuntu-18.04'
+      name: 'docker-linux-agents'
     steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '2.1.x'    
     - template: version.yml
     - task: DockerCompose@0
       displayName: "Docker Compose Build"
@@ -89,7 +97,7 @@ stages:
           BUILD_NUMBER=$(GitVersion.SemVer)
         action: 'Build services'
         arguments: '-m 2G --parallel --pull'
-        currentWorkingDirectory: '$(Build.SourcesDirectory)\docker'
+        currentWorkingDirectory: '$(Build.SourcesDirectory)/docker'
     - task: DockerCompose@0
       displayName: "Push Images"
       condition: succeeded()
@@ -106,7 +114,7 @@ stages:
           SQL_SA_PASSWORD=$(SQL_SA_PASSWORD}
           BUILD_NUMBER=$(GitVersion.SemVer)
         action: 'Push services'
-        currentWorkingDirectory: '$(Build.SourcesDirectory)\docker'
+        currentWorkingDirectory: '$(Build.SourcesDirectory)/docker'
 
 - stage: Trigger_Harbor_Push
   dependsOn:
