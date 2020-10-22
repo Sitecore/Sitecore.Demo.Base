@@ -29,7 +29,6 @@ sqlSaPassword:
 
 resources:
   limits:
-    cpu: 2
     memory: 2560Mi
   requests:
     cpu: 700m
