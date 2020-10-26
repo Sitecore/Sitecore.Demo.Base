@@ -20,16 +20,24 @@ stages:
   displayName: Build images
   jobs:
   - job: Build
+    strategy:
+      matrix:
+        windows2004:
+          poolName: 'docker-2004-agents'
+          osVersion: '2004'
+        ltsc2019:
+          poolName: 'docker-ltsc2019-agents'
+          osVersion: 'ltsc2019'
     displayName: Build
     pool:
-      name: docker-ltsc2019-agents
+      name: $(poolName)
     steps:
     - task: UseDotNet@2
       inputs:
         packageType: 'sdk'
         version: '2.1.x'
         installationPath: 'c:/program files/dotnet'
-        performMultiLevelLookup: true    
+        performMultiLevelLookup: true
     - template: version.yml
     - task: DockerCompose@0
       displayName: "Docker Compose Build"
@@ -40,7 +48,7 @@ stages:
         dockerComposeFile: '$(Build.SourcesDirectory)\docker\docker-compose.yml'
         dockerComposeFileArgs: |
           REGISTRY=$(REGISTRY)
-          WINDOWSSERVERCORE_VERSION=$(WINDOWSSERVERCORE_VERSION)
+          WINDOWSSERVERCORE_VERSION=$(osVersion)
           NANOSERVER_VERSION=$(NANOSERVER_VERSION)
           SITECORE_VERSION=$(SITECORE_VERSION)
           SQL_SA_PASSWORD=$(SQL_SA_PASSWORD}
@@ -58,7 +66,7 @@ stages:
         dockerComposeFile: '$(Build.SourcesDirectory)\docker\docker-compose.yml'
         dockerComposeFileArgs: |
           REGISTRY=$(REGISTRY)
-          WINDOWSSERVERCORE_VERSION=$(WINDOWSSERVERCORE_VERSION)
+          WINDOWSSERVERCORE_VERSION=$(osVersion)
           NANOSERVER_VERSION=$(NANOSERVER_VERSION)
           SITECORE_VERSION=$(SITECORE_VERSION)
           SQL_SA_PASSWORD=$(SQL_SA_PASSWORD}
@@ -78,7 +86,7 @@ stages:
     - task: UseDotNet@2
       inputs:
         packageType: 'sdk'
-        version: '2.1.x'    
+        version: '2.1.x'
     - template: version.yml
     - task: DockerCompose@0
       displayName: "Docker Compose Build"
