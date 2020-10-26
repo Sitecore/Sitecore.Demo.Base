@@ -37,7 +37,7 @@ stages:
         packageType: 'sdk'
         version: '2.1.x'
         installationPath: 'c:/program files/dotnet'
-        performMultiLevelLookup: true    
+        performMultiLevelLookup: true
     - template: version.yml
     - task: DockerCompose@0
       displayName: "Docker Compose Build"
@@ -66,7 +66,7 @@ stages:
         dockerComposeFile: '$(Build.SourcesDirectory)\docker\docker-compose.yml'
         dockerComposeFileArgs: |
           REGISTRY=$(REGISTRY)
-          WINDOWSSERVERCORE_VERSION=$(WINDOWSSERVERCORE_VERSION)
+          WINDOWSSERVERCORE_VERSION=$(osVersion)
           NANOSERVER_VERSION=$(NANOSERVER_VERSION)
           SITECORE_VERSION=$(SITECORE_VERSION)
           SQL_SA_PASSWORD=$(SQL_SA_PASSWORD}
@@ -86,7 +86,7 @@ stages:
     - task: UseDotNet@2
       inputs:
         packageType: 'sdk'
-        version: '2.1.x'    
+        version: '2.1.x'
     - template: version.yml
     - task: DockerCompose@0
       displayName: "Docker Compose Build"
