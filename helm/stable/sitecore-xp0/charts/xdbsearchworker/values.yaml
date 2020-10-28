@@ -2,7 +2,6 @@ image: scr.sitecore.com/sxp/sitecore-xp0-xdbsearchworker:10.0.0-ltsc2019
 
 resources:
     limits:
-      cpu: 1
       memory: 512Mi
     requests:
       cpu: 250m

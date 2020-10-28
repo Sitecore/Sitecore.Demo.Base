@@ -42,6 +42,8 @@ spec:
               value: "{{ .Values.admin.password }}"
             - name: MARKETING_DEFINITIONS_APIKEY
               value: DF7D20E837254C6FBFA2B854C295CB61
+            - name: DAM_URL
+              value: "{{ .Values.dam.url }}"
           ports:
             - name: http
               containerPort: 80

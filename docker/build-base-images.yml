@@ -144,7 +144,7 @@ stages:
           useSameSourceVersion: false
           useCustomSourceVersion: false
           useSameBranch: false
-          branchToUse: 'master'
+          branchToUse: 'main'
           waitForQueuedBuildsToFinish: false
           storeInEnvironmentVariable: false
           buildParameters: 'namespace: demo, groupName: base, tag: $(GitVersion.SemVer)'

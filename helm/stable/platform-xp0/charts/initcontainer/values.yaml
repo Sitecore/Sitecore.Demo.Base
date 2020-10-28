@@ -53,7 +53,6 @@ ingress:
 
 resources:
   limits:
-    cpu: 500m
     memory: 128Mi
   requests:
     cpu: 50m
@@ -67,5 +66,8 @@ tolerations: []
 affinity: {}
 
 admin:
-  username: superuser
-  password: b
+  username: ""
+  password: ""
+
+dam:
+  url: ""
