@@ -11,6 +11,7 @@ services:
         DEF_ASSETS: ${REGISTRY}community/modules/custom-def-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         DEF_SFDC_ASSETS: ${REGISTRY}community/modules/custom-def-sfdc-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         SFMC_BDE_ASSETS: ${REGISTRY}community/modules/custom-sfmc-bde-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        SFMC_CE_ASSETS: ${REGISTRY}community/modules/custom-sfmc-ce-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         DAM_ASSETS: ${REGISTRY}community/modules/custom-dam-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         CMP_ASSETS: ${REGISTRY}community/modules/custom-cmp-xp-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         XGEN:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
@@ -20,7 +21,7 @@ services:
     environment:
       SA_PASSWORD: ${SQL_SA_PASSWORD}
       ACCEPT_EULA: "Y"
-  cm: 
+  cm:
     image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-cm:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
     isolation: hyperv
     build:

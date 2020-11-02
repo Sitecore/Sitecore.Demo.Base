@@ -147,7 +147,7 @@ stages:
           branchToUse: 'main'
           waitForQueuedBuildsToFinish: false
           storeInEnvironmentVariable: false
-          buildParameters: 'namespace: demo, groupName: base, tag: $(GitVersion.SemVer)'
+          buildParameters: 'namespace: demo, groupName: demoBase, tag: $(GitVersion.SemVer)'
           authenticationMethod: 'Personal Access Token'
           password: '$(System.AccessToken)'
           enableBuildInQueueCondition: false

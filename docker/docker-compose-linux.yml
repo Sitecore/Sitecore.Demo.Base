@@ -10,6 +10,7 @@ services:
         DEF_ASSETS: ${REGISTRY}community/modules/custom-def-assets:${SITECORE_VERSION}-linux
         DEF_SFDC_ASSETS: ${REGISTRY}community/modules/custom-def-sfdc-assets:${SITECORE_VERSION}-linux
         SFMC_BDE_ASSETS: ${REGISTRY}community/modules/custom-sfmc-bde-assets:${SITECORE_VERSION}-linux
+        SFMC_CE_ASSETS: ${REGISTRY}community/modules/custom-sfmc-ce-assets:${SITECORE_VERSION}-linux
         DAM_ASSETS: ${REGISTRY}community/modules/custom-dam-assets:${SITECORE_VERSION}-linux
         CMP_ASSETS: ${REGISTRY}community/modules/custom-cmp-xp-assets:${SITECORE_VERSION}-linux
         XGEN:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-linux
