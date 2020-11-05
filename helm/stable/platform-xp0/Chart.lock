@@ -1,6 +1,6 @@
 dependencies:
 - name: sitecore-xp0
   repository: file://../sitecore-xp0/
-  version: 0.1.0
-digest: sha256:137100f7315b8b49a4da6b4143a6f5d14c3421d0db44be5f3419cd655807eafc
-generated: "2020-08-13T13:50:14.0872042-04:00"
+  version: 10.0.0
+digest: sha256:a0a1c600367af15b0fdd23e037d23932dde5e3877a99de22c7cec2735af287bb
+generated: "2020-11-02T10:39:11.044613+01:00"
