@@ -56,12 +56,8 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-ps
-          image: sitecoredemocontainers.azurecr.io/sitecore-readiness:latest-linux
-          env:
-            - name: host
-              value: "ps"
-            - name: port
-              value: "80" 
+          image: mcr.microsoft.com/powershell:lts-ubuntu-16.04
+          command: ["pwsh", "-Command", "do { Start-Sleep -Seconds 2 } until ($(try {(Test-Connection -TcpPort 80 ps) -eq $True } catch { $false }));"]
         - name: wait-xdbcollection
           image: mcr.microsoft.com/powershell:lts-ubuntu-16.04
           command: ["pwsh", "-Command", "do { Start-Sleep -Seconds 3 } until ($(try {(iwr http://xconnect/healthz/ready).StatusCode -eq 200} catch { $false }));"]
