@@ -18,12 +18,8 @@ spec:
         beta.kubernetes.io/os: windows
       initContainers:
       - name: wait-for-sql
-        image: sitecoredemocontainers.azurecr.io/sitecore-readiness:latest
-        env:
-          - name: host
-            value: "mssql"
-          - name: port
-            value: "1433"
+        image: mcr.microsoft.com/powershell:lts-nanoserver-1809
+        command: ["pwsh", "-Command", "do { Start-Sleep -Seconds 2 } until ($(try {(Test-Connection -TcpPort 1433 mssql) -eq $True } catch { $false }));"]
       - name: wait-for-xconnect
         image: mcr.microsoft.com/powershell:lts-nanoserver-1809
         command: ["pwsh", "-Command", "do { Start-Sleep -Seconds 3 } until ($(try\
