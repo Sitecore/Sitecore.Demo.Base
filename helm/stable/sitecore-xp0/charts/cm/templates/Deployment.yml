@@ -201,7 +201,7 @@ spec:
         - name: Sitecore_ConnectionStrings_Xdb.MarketingAutomation.Reporting.Client
           value: http://xconnect
         - name: Sitecore_ConnectionStrings_Xdb.ReferenceData.Client
-          value: http://xconnect    
+          value: http://xconnect
         - name: Sitecore_Identity_Server_Authority
           value: "https://{{ .Values.global.sitecore.id.host }}"
         - name: Sitecore_Identity_Server_CallbackAuthority
@@ -212,6 +212,36 @@ spec:
           value: "false"
         - name: EXM_RENDERER_URL
           value: "http://cm.{{ .Release.Namespace }}.svc.cluster.local"
+        - name: REACT_APP_FIREBASE_MESSAGING_PUSH_KEY
+          valueFrom:
+            secretKeyRef:
+              name: firebase-messaging-push-key
+              key: firebase-messagingpushkey.txt
+        - name: REACT_APP_FIREBASE_SENDER_ID
+          valueFrom:
+            secretKeyRef:
+              name: firebase-sender-id
+              key: firebase-senderid.txt
+        - name: REACT_APP_FIREBASE_PROJECT_ID
+          valueFrom:
+            secretKeyRef:
+              name: firebase-project-id
+              key: firebase-projectid.txt
+        - name: REACT_APP_FIREBASE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: firebase-api-key
+              key: firebase-apikey.txt
+        - name: REACT_APP_FIREBASE_APP_ID
+          valueFrom:
+            secretKeyRef:
+              name: firebase-app-id
+              key: firebase-appid.txt
+        - name: REACT_APP_GOOGLE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: google-api-key
+              key: google-apikey.txt
         {{- range .Values.env }}
         - name: {{ .name }}
           value: {{ tpl .value $ }}

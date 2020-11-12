@@ -1,0 +1,5 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# .sh scripts should always have LF line endings, even when checked out on a Windows system
+*.sh text eol=lf

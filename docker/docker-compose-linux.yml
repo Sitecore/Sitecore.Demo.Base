@@ -6,7 +6,7 @@ services:
     build:
       context: images/linux/demo-xp-mssql
       args:
-        BASE_IMAGE: ${REGISTRY}community/sitecore-xp0-custom-sxa-ps-mssql:${SITECORE_VERSION}-linux
+        BASE_IMAGE: ${REGISTRY}community/sitecore-xp0-custom-sxa-jss-ps-mssql:${SITECORE_VERSION}-linux
         DEF_ASSETS: ${REGISTRY}community/modules/custom-def-assets:${SITECORE_VERSION}-linux
         DEF_SFDC_ASSETS: ${REGISTRY}community/modules/custom-def-sfdc-assets:${SITECORE_VERSION}-linux
         SFMC_BDE_ASSETS: ${REGISTRY}community/modules/custom-sfmc-bde-assets:${SITECORE_VERSION}-linux

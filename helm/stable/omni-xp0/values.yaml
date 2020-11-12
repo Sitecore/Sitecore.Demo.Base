@@ -1,4 +1,13 @@
-licenseFileSecretName:
+global:
+  sitecore:
+    appcd:
+      host: ""
+    kioskcd:
+      host: ""
+    app:
+      host: ""
+    kiosk:
+      host: ""
 
 sitecore-xp0:
   cm:
@@ -39,6 +48,9 @@ sitecore-xp0:
       - name: SITECORE_CONNECTIONSTRINGS_SFMC
         value: |-
           "{{ .Values.sfmc}}"
+      - name: PROXY_API_HOST
+        value: |-
+          "https://{{ .Values.global.sitecore.cm.host }}"
   mssql:
     user:
       password: ""
@@ -55,7 +67,7 @@ sitecore-xp0:
       kioskCdBaseUrl: ""
       appBaseUrl: ""
     boot:
-      overrideScripts: "Demo-Boot-Platform-Linux.ps1"
+      overrideScripts: "Demo-Boot-Platform-Linux.ps1;Demo-Boot-Omni-Linux.ps1"
 
     env:
       - name: USER_PASSWORD
@@ -83,25 +95,26 @@ sitecore-xp0:
         value: |-
           "{{ .Values.boot.overrideScripts }}"
 
-cd:
+  xdbautomationworker:
+    env:
+      - name: REACT_APP_PUBLIC_HOST_NAME
+        value: |-
+          "//{{ .Values.global.sitecore.app.host }}"
+
+app:
   env:
-    - name: SITECORE_APPSETTINGS_ROLE__DEFINE
-      value: "ContentDelivery"
-    - name: SITECORE_APPSETTINGS_SXAXM__DEFINE
-      value: "sxaconnect"
-    - name: SITECORE_APPSETTINGS_ENV__DEFINE
-      value: "Production"
-    - name: SITECORE_APPSETTINGS_UNICORN__DEFINE
-      value: "Disabled"
-    - name: SITECORE_APPSETTINGS_PUBLISHINGSERVICE__DEFINE
-      value: "Disabled"
-    - name: SITECORE_APPSETTINGS_INTEGRATIONS__DEFINE
-      value: "None"
-global:
-  sitecore:
-    cm:
-      host: ""
-    cd:
-      host: ""
-    id:
-      host: ""
+    - name: SITECORE_API_HOST
+      value: |-
+        "https://{{ .Values.global.sitecore.appcd.host }}"
+    - name: PROXY_API_HOST
+      value: |-
+        "https://{{ .Values.global.sitecore.app.host }}"
+
+kiosk:
+  env:
+    - name: SITECORE_API_HOST
+      value: |-
+        "https://{{ .Values.global.sitecore.kioskcd.host }}"
+    - name: PROXY_API_HOST
+      value: |-
+        "https://{{ .Values.global.sitecore.kiosk.host }}"
