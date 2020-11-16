@@ -128,7 +128,7 @@ stages:
   dependsOn:
   - Build
   - Build_Linux_Images
-  condition: and(succeeded('Build'), succeeded('Build_Linux_Images'),or( eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
+  condition: and(succeeded('Build'), succeeded('Build_Linux_Images'),or( eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['Build.SourceBranch'], 'refs/heads/main')))
   jobs:
     - job: Harbor_Push
       displayName: 'Harbor Push'
