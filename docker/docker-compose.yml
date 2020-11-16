@@ -1,7 +1,7 @@
 version: '2.4'
 
 services:
-  sql:
+  mssql:
     image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-mssql:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
     isolation: hyperv
     build:
@@ -14,7 +14,8 @@ services:
         SFMC_CE_ASSETS: ${REGISTRY}community/modules/custom-sfmc-ce-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         DAM_ASSETS: ${REGISTRY}community/modules/custom-dam-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         CMP_ASSETS: ${REGISTRY}community/modules/custom-cmp-xp-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
-        XGEN:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        XGEN_ASSETS:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        SF_CRM_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
     mem_limit: 4GB
     ports:
       - "44010:1433"
@@ -34,7 +35,8 @@ services:
         SFMC_CE_ASSETS: ${REGISTRY}community/modules/custom-sfmc-ce-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         DAM_ASSETS: ${REGISTRY}community/modules/custom-dam-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         CMP_ASSETS: ${REGISTRY}community/modules/custom-cmp-xp-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
-        XGEN:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        XGEN_ASSETS:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        SF_CRM_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
     entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\iis\\Development.ps1 -WatchDirectoryParameters @{ Path = 'C:\\src'; Destination = 'C:\\inetpub\\wwwroot'; ExcludeFiles = @('C:\\src\\Web.config'); }"
     mem_limit: 4G
     ports:
@@ -47,7 +49,24 @@ services:
       args:
         BASE_IMAGE: ${REGISTRY}community/sitecore-xp1-custom-sxa-jss-ps-cd:10.0.0-ltsc2019
         DAM_ASSETS: ${REGISTRY}community/modules/custom-dam-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        SF_CRM_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
     entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\iis\\Development.ps1 -WatchDirectoryParameters @{ Path = 'C:\\src'; Destination = 'C:\\inetpub\\wwwroot'; ExcludeFiles = @('C:\\src\\Web.config'); }"
     mem_limit: 4G
     ports:
       - "44001:80"
+  xdbautomationworker:
+    image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-xdbautomationworker:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
+    build:
+      context: .\images\windows\demo-xp-xdbautomationworker
+      args:
+        BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sxp/sitecore-xp0-xdbautomationworker:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}
+        DEF_MA_ASSETS: ${REGISTRY}community/modules/custom-def-ma-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        SFMC_BDE_MA_ASSETS: ${REGISTRY}community/modules/custom-sfmc-bde-ma-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+  tenantservice:
+    image: ${REGISTRY}demo/base/lighthouse-xp0-modules-tenant-service:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
+    build:
+      context: .\images\windows\demo-xp-tenantservice
+      args:
+        BASE_IMAGE: ${REGISTRY}community/sitecore-custom-def-tenant-service:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}
+        SF_CRM_TS_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-ts-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        SFMC_BDE_TS_ASSETS: ${REGISTRY}community/modules/custom-sfmc-bde-ts-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
