@@ -1,9 +1,0 @@
-FROM mcr.microsoft.com/powershell:lts-alpine-3.8
-
-ENV host=placeholder
-ENV port=placeholder
-
-COPY test-connection.ps1 /
-
-ENTRYPOINT [ "pwsh", "test-connection.ps1" ]
-

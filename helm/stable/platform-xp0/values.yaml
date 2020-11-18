@@ -35,10 +35,13 @@ sitecore-xp0:
           "{{ .Values.cmp.servicebussubscription }}"
       - name: SITECORE_CONNECTIONSTRINGS_CMP.ServiceBusEntityPathOut
         value: |-
-          "{{ .Values.cmp.servicebusentitypathout }}"            
+          "{{ .Values.cmp.servicebusentitypathout }}"
       - name: SITECORE_CONNECTIONSTRINGS_SFMC
         value: |-
           "{{ .Values.sfmc}}"
+      - name: PROXY_API_HOST
+        value: |-
+          "https://{{ .Values.global.sitecore.cm.host }}"
   mssql:
     user:
       password: ""
@@ -55,33 +58,37 @@ sitecore-xp0:
       kioskCdBaseUrl: ""
       appBaseUrl: ""
     boot:
-      overrideScripts: "Demo-Boot-Platform.ps1"
+      overrideScripts: "Demo-Boot-Platform-Linux.ps1"
 
     env:
-      - name: USER_PASSWORD 
-        value: |- 
-          "{{ .Values.user.password }}"
-      - name: ADMIN_USER_NAME 
-        value: |- 
-          "{{ .Values.admin.username }}"
-      - name: DISABLE_DEFAULT_ADMIN 
+      - name: USER_PASSWORD
         value: |-
-           "{{ .Values.admin.disable.default }}"
+          "{{ .Values.user.password }}"
+      - name: ADMIN_USER_NAME
+        value: |-
+          "{{ .Values.admin.username }}"
+      - name: DISABLE_DEFAULT_ADMIN
+        value: |-
+          "{{ .Values.admin.disable.default }}"
       - name: DAM_URL
-        value: |- 
+        value: |-
           "{{ .Values.dam.url }}"
       - name: EXM_BASE_URL
-        value: |- 
+        value: |-
           "{{ .Values.exm.baseUrl }}"
       - name: EXM_KIOSK_CD_BASE_URL
         value: |-
           "{{ .Values.exm.kioskCdBaseUrl }}"
       - name: EXM_APP_BASE_URL
-        value: |- 
+        value: |-
           "{{ .Values.exm.appBaseUrl }}"
       - name: BOOT_OVERRIDE_SCRIPTS
-        value: |- 
+        value: |-
           "{{ .Values.boot.overrideScripts }}"
+  xdbautomationworker:
+    env:
+      - name: DUMMY_VARIABLE
+        value: ""
 
 cd:
   env:

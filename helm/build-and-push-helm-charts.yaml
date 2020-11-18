@@ -31,7 +31,6 @@ stages:
         inlineScript: |
           ACCESS_TOKEN=$(az acr login --name $(Azure.Registry.Uri) --expose-token --output tsv --query accessToken)
           echo $ACCESS_TOKEN | helm registry login $(Azure.Registry.Uri) -u 00000000-0000-0000-0000-000000000000 --password-stdin
-
     - task: HelmInstaller@1
       inputs:
         helmVersionToInstall: 'latest'

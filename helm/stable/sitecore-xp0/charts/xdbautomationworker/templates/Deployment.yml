@@ -83,6 +83,15 @@ spec:
         - name: Sitecore_ConnectionStrings_Messaging
           value: Data Source=$(Database_Server);Initial Catalog=Sitecore.Messaging;User
             ID=$(Messaging_Database_Username);Password=$(Messaging_Database_Password);
+        - name: REACT_APP_FIREBASE_MESSAGING_SERVER_KEY
+          valueFrom:
+            secretKeyRef:
+              name: firebase-messaging-server-key
+              key: firebase-messagingserverkey.txt
+        {{- range .Values.env }}
+        - name: {{ .name }}
+          value: {{ tpl .value $ }}
+        {{- end }}
         livenessProbe:
           exec:
             command:

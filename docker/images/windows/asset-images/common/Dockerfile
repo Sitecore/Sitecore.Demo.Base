@@ -1,4 +1,0 @@
-# escape=`
-
-ARG BASE_BUILD_IMAGE
-ARG BASE_IMAGE
