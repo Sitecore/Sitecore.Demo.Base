@@ -39,6 +39,9 @@ sitecore-xp0:
       - name: SITECORE_CONNECTIONSTRINGS_SFMC
         value: |-
           "{{ .Values.sfmc}}"
+      - name: PROXY_API_HOST
+        value: |-
+          "https://{{ .Values.global.sitecore.cm.host }}"
   mssql:
     user:
       password: ""
@@ -82,6 +85,10 @@ sitecore-xp0:
       - name: BOOT_OVERRIDE_SCRIPTS
         value: |-
           "{{ .Values.boot.overrideScripts }}"
+  xdbautomationworker:
+    env:
+      - name: DUMMY_VARIABLE
+        value: ""
 
 cd:
   env:
