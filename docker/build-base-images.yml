@@ -54,6 +54,7 @@ stages:
           SQL_SA_PASSWORD=$(SQL_SA_PASSWORD}
           BUILD_NUMBER=$(GitVersion.SemVer)
         action: 'Build services'
+        additionalImageTags: '$(SITECORE_VERSION)-$(osVersion)-$(additionalImageTags)'
         arguments: '-m 2G --parallel --pull'
         currentWorkingDirectory: '$(Build.SourcesDirectory)\docker'
     - task: DockerCompose@0
@@ -72,6 +73,7 @@ stages:
           SQL_SA_PASSWORD=$(SQL_SA_PASSWORD}
           BUILD_NUMBER=$(GitVersion.SemVer)
         action: 'Push services'
+        additionalImageTags: '$(SITECORE_VERSION)-$(osVersion)-$(additionalImageTags)'
         currentWorkingDirectory: '$(Build.SourcesDirectory)\docker'
 - stage: Build_Linux_Images
   displayName: 'Build Linux images'
@@ -104,6 +106,8 @@ stages:
           SQL_SA_PASSWORD=$(SQL_SA_PASSWORD}
           BUILD_NUMBER=$(GitVersion.SemVer)
         action: 'Build services'
+        additionalImageTags: '$(SITECORE_VERSION)-linux-$(additionalImageTags)'
+
         arguments: '-m 2G --parallel --pull'
         currentWorkingDirectory: '$(Build.SourcesDirectory)/docker'
     - task: DockerCompose@0
@@ -122,6 +126,7 @@ stages:
           SQL_SA_PASSWORD=$(SQL_SA_PASSWORD}
           BUILD_NUMBER=$(GitVersion.SemVer)
         action: 'Push services'
+        additionalImageTags: '$(SITECORE_VERSION)-linux-$(additionalImageTags)'
         currentWorkingDirectory: '$(Build.SourcesDirectory)/docker'
 
 - stage: Trigger_Harbor_Push
