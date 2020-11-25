@@ -20,6 +20,7 @@ stages:
   displayName: Build images
   jobs:
   - job: Build
+    timeoutInMinutes: 240
     strategy:
       matrix:
         windows2004:
@@ -80,7 +81,7 @@ stages:
   dependsOn: []
   jobs:
   - job: Build_Linux_Images
-    timeoutInMinutes: 60
+    timeoutInMinutes: 240
     displayName: 'Build Linux Images'
     pool:
       name: 'docker-linux-agents'
