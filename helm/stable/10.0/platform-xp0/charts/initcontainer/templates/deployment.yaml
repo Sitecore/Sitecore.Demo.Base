@@ -28,6 +28,21 @@ spec:
           image: "{{ .Values.image }}"
           imagePullPolicy: {{ .Values.pullPolicy }}
           env:
+            - name: Database_Server
+              valueFrom:
+                secretKeyRef:
+                  name: sitecore-database
+                  key: sitecore-databaseservername.txt
+            - name: Database_Username
+              valueFrom:
+                secretKeyRef:
+                  name: sitecore-database
+                  key: sitecore-databaseusername.txt
+            - name: Database_Password
+              valueFrom:
+                secretKeyRef:
+                  name: sitecore-database
+                  key: sitecore-databasepassword.txt
             - name: HOST_CM
               value: "http://cm.{{ .Release.Namespace }}.svc.cluster.local"
             - name: HOST_CD
@@ -44,6 +59,8 @@ spec:
               value: DF7D20E837254C6FBFA2B854C295CB61
             - name: DAM_URL
               value: "{{ .Values.dam.url }}"
+            - name: INIT_CONTEXT
+              value: Data Source=$(Database_Server);Initial Catalog=platform_init_ready;User ID=$(Database_Username);Password=$(Database_Password);
           ports:
             - name: http
               containerPort: 80
