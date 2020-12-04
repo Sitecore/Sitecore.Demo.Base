@@ -22,10 +22,17 @@ spec:
           command: ["pwsh", "-Command", "do { Start-Sleep -Seconds 3 } until ($(try\
               \ {(iwr http://xconnect/healthz/ready).StatusCode -eq 200} catch\
               \ { $false }));"]
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: cd
       containers:
       - name: sitecore-xp0-cd
         image: "{{ .Values.image }}"
         imagePullPolicy: Always
+        volumeMounts:
+          - name: data
+            mountPath: "/backup"
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
         ports:

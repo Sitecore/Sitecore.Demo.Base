@@ -8,3 +8,9 @@ resources:
       memory: 2Gi
 
 env: {}
+
+volumeClaim:
+  storageClassName: "managed-premium"
+  storageSize: "1Gi"
+  accessModes: 
+    - ReadWriteOnce
