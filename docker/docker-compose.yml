@@ -62,11 +62,3 @@ services:
         BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sxp/sitecore-xp0-xdbautomationworker:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}
         DEF_MA_ASSETS: ${REGISTRY}community/modules/custom-def-ma-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         SFMC_BDE_MA_ASSETS: ${REGISTRY}community/modules/custom-sfmc-bde-ma-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
-  tenantservice:
-    image: ${REGISTRY}demo/base/lighthouse-xp0-modules-tenant-service:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
-    build:
-      context: .\images\windows\demo-xp-tenantservice
-      args:
-        BASE_IMAGE: ${REGISTRY}community/sitecore-custom-def-tenant-service:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}
-        SF_CRM_TS_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-ts-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
-        SFMC_BDE_TS_ASSETS: ${REGISTRY}community/modules/custom-sfmc-bde-ts-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
