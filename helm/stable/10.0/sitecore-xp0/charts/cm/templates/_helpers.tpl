@@ -61,3 +61,9 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+{{/*
+  Define the name of the cm PVC
+*/}}
+{{- define "cm.pvcName" -}}
+{{ printf "%s-%s" (include "cm.fullname" .) "pvc" | trunc 63 | trimSuffix "-"  }}
+{{- end -}}
