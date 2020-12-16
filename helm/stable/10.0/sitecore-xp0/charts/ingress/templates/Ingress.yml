@@ -30,6 +30,13 @@ spec:
         backend:
           serviceName: id
           servicePort: 80
+  - host: "{{ .Values.global.sitecore.authoringhost.host }}"
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: authoringhost
+          servicePort: 80
   tls:
   - secretName: global-cd-tls
     hosts:
@@ -40,3 +47,6 @@ spec:
   - secretName: global-id-tls
     hosts:
     - "{{ .Values.global.sitecore.id.host }}"
+  - secretName: global-authoringhost-tls
+    hosts:
+    - "{{ .Values.global.sitecore.authoringhost.host }}"

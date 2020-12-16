@@ -8,6 +8,7 @@ ARG DAM_ASSETS
 ARG CMP_ASSETS
 ARG XGEN_ASSETS
 ARG SF_CRM_ASSETS
+ARG HORIZON_INTEGRATION_ASSETS
 
 FROM ${DEF_ASSETS} as def_assets
 FROM ${DEF_SFDC_ASSETS} as def_sfdc_assets
@@ -17,7 +18,7 @@ FROM ${DAM_ASSETS} as dam_assets
 FROM ${CMP_ASSETS} as cmp_assets
 FROM ${XGEN_ASSETS} as xgen_assets
 FROM ${SF_CRM_ASSETS} as sf_crm_assets
-
+FROM ${HORIZON_INTEGRATION_ASSETS} as horizon_integration_assets
 FROM $BASE_IMAGE as modules
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
@@ -30,6 +31,7 @@ COPY --from=dam_assets /module/db /module_data/dam_assets
 COPY --from=cmp_assets /module/db /module_data/cmp_assets
 COPY --from=xgen_assets /module/db /module_data/xgen_assets
 COPY --from=sf_crm_assets /module/db /module_data/sf_crm_assets
+COPY --from=horizon_integration_assets /module/db /module_data/horizon_integration_assets
 
-RUN $modules = @('def_assets', 'def_sfdc_assets', 'sfmc_bde_assets', 'sfmc_ce_assets', 'dam_assets', 'cmp_assets', 'xgen_assets', 'sf_crm_assets'); `
+RUN $modules = @('def_assets', 'def_sfdc_assets', 'sfmc_bde_assets', 'sfmc_ce_assets', 'dam_assets', 'cmp_assets', 'xgen_assets', 'sf_crm_assets', 'horizon_integration_assets'); `
     foreach($module in $modules) { C:\DeployDatabases.ps1 -ResourcesDirectory /module_data/$module; Remove-Item -Path /module_data/$module -Recurse -Force; }

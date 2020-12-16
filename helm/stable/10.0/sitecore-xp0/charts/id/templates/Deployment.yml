@@ -69,6 +69,8 @@ spec:
           value: "https://{{ .Values.global.sitecore.cm.host }}"
         - name: Sitecore_Sitecore__IdentityServer__PublicOrigin
           value: "https://{{ .Values.global.sitecore.id.host }}"
+        - name: Sitecore_Sitecore__IdentityServer__Clients__DefaultClient__AllowedCorsOrigins__AllowedCorsOriginsGroup2
+          value: "https://{{ .Values.global.sitecore.authoringhost.host }}|http://authoringhost.{{ .Release.Namespace }}.svc.cluster.local"
         livenessProbe:
           httpGet:
             path: /healthz/live

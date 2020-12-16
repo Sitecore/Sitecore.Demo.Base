@@ -16,6 +16,7 @@ services:
         CMP_ASSETS: ${REGISTRY}community/modules/custom-cmp-xp-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         XGEN_ASSETS:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         SF_CRM_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        HORIZON_INTEGRATION_ASSETS: ${REGISTRY}community/modules/custom-horizon-integration-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
     mem_limit: 4GB
     ports:
       - "44010:1433"
@@ -37,7 +38,7 @@ services:
         CMP_ASSETS: ${REGISTRY}community/modules/custom-cmp-xp-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         XGEN_ASSETS:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         SF_CRM_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
-    entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\iis\\Development.ps1 -WatchDirectoryParameters @{ Path = 'C:\\src'; Destination = 'C:\\inetpub\\wwwroot'; ExcludeFiles = @('C:\\src\\Web.config'); }"
+        HORIZON_INTEGRATION_ASSETS: ${REGISTRY}community/modules/custom-horizon-integration-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
     mem_limit: 4G
     ports:
       - "44001:80"
@@ -47,13 +48,12 @@ services:
     build:
       context: .\images\windows\demo-xp-cd
       args:
-        BASE_IMAGE: ${REGISTRY}community/sitecore-xp1-custom-sxa-jss-ps-cd:10.0.0-ltsc2019
+        BASE_IMAGE: ${REGISTRY}community/sitecore-xp1-custom-sxa-jss-ps-cd:${SITECORE_VERSION}-ltsc2019
         DAM_ASSETS: ${REGISTRY}community/modules/custom-dam-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         SF_CRM_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
-    entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\iis\\Development.ps1 -WatchDirectoryParameters @{ Path = 'C:\\src'; Destination = 'C:\\inetpub\\wwwroot'; ExcludeFiles = @('C:\\src\\Web.config'); }"
     mem_limit: 4G
     ports:
-      - "44001:80"
+      - "44002:80"
   xdbautomationworker:
     image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-xdbautomationworker:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
     build:
@@ -62,3 +62,29 @@ services:
         BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sxp/sitecore-xp0-xdbautomationworker:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}
         DEF_MA_ASSETS: ${REGISTRY}community/modules/custom-def-ma-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         SFMC_BDE_MA_ASSETS: ${REGISTRY}community/modules/custom-sfmc-bde-ma-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+  tenantservice:
+    image: ${REGISTRY}demo/base/lighthouse-xp0-modules-tenant-service:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
+    build:
+      context: .\images\windows\demo-xp-tenantservice
+      args:
+        BASE_IMAGE: ${REGISTRY}community/sitecore-custom-def-tenant-service:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}
+        SF_CRM_TS_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-ts-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        SFMC_BDE_TS_ASSETS: ${REGISTRY}community/modules/custom-sfmc-bde-ts-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+  id:
+    image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-id:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
+    build:
+      context: .\images\windows\demo-xp-id
+      args:
+        BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sxp/sitecore-id:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}
+  xconnect:
+    image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-xconnect:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
+    build:
+      context: .\images\windows\demo-xp-xconnect
+      args:
+        BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sxp/sitecore-xp0-xconnect:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}
+  xdbsearchworker:
+    image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-xdbsearchworker:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
+    build:
+      context: .\images\windows\demo-xp-xdbsearchworker
+      args:
+        BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sxp/sitecore-xp0-xdbsearchworker:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}

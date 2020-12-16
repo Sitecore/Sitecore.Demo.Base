@@ -12,5 +12,3 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 
 COPY --from=sf_crm_ts_assets /module/cm/content /inetpub/wwwroot
 COPY --from=sfmc_bde_ts_assets /module/cm/content /inetpub/wwwroot
-
-
