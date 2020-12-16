@@ -1,6 +1,0 @@
-dependencies:
-- name: sitecore-xp
-  repository: file://../sitecore-xp/
-  version: 0.1.0
-digest: sha256:66526e3afea8a96fbee2523e27841e125b365547ffa2ad61c0d0fbac6f23d56d
-generated: "2020-07-24T11:43:41.240193726Z"

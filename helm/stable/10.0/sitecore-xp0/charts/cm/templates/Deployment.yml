@@ -219,6 +219,10 @@ spec:
           value: "false"
         - name: EXM_RENDERER_URL
           value: "http://cm.{{ .Release.Namespace }}.svc.cluster.local"
+        - name: Sitecore_Horizon_ClientHost
+          value: "https://{{ .Values.global.sitecore.authoringhost.host }}"
+        - name: SOLR_CORE_PREFIX_NAME
+          value: sitecore
         - name: REACT_APP_FIREBASE_MESSAGING_PUSH_KEY
           valueFrom:
             secretKeyRef:
