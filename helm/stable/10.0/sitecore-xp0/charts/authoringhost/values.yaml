@@ -1,4 +1,4 @@
-image: sitecoredemocontainers.azurecr.io/demo/lighthouse-authoringhost:10.0.1-ltsc2019-1001.0.6-beta.1
+image: scr.sitecore.com/sxp/sitecore-authoringhost:10.0.1-ltsc2019
  
 resources:
     limits:
