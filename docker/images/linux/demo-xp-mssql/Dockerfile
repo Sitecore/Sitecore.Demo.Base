@@ -6,6 +6,7 @@ ARG SFMC_CE_ASSETS
 ARG DAM_ASSETS
 ARG CMP_ASSETS
 ARG XGEN
+ARG HORIZON_INTEGRATION_ASSETS
 
 FROM ${DEF_ASSETS} as def_assets
 FROM ${DEF_SFDC_ASSETS} as def_sfdc_assets
@@ -14,6 +15,7 @@ FROM ${SFMC_CE_ASSETS} as sfmc_ce_assets
 FROM ${DAM_ASSETS} as dam_assets
 FROM ${CMP_ASSETS} as cmp_assets
 FROM ${XGEN} as xgen_assets
+FROM ${HORIZON_INTEGRATION_ASSETS} as horizon_integration_assets
 
 FROM $BASE_IMAGE as builder
 
@@ -32,7 +34,7 @@ COPY --from=sfmc_ce_assets /module/db /opt/wdp/sfmcce
 COPY --from=dam_assets /module/db /opt/wdp/dam
 COPY --from=cmp_assets /module/db /opt/wdp/cmp
 COPY --from=xgen_assets /module/db /opt/wdp/xgen
-
+COPY --from=horizon_integration_assets /module/db /opt/wdb/horizon
 COPY attach-databases.sh /opt/
 COPY install-databases.sh /opt/
 
@@ -50,7 +52,8 @@ RUN chmod +x /opt/*.sh \
     && ./opt/install-databases.sh /opt/wdp/sfmc \
     && ./opt/install-databases.sh /opt/wdp/sfmcde \
     && ./opt/install-databases.sh /opt/wdp/sfmcce \
-    && ./opt/install-databases.sh /opt/wdp/xgen
+    && ./opt/install-databases.sh /opt/wdp/xgen \
+    && ./opt/install-databases.sh /opt/wdp/horizon
 
 FROM $BASE_IMAGE as production
 

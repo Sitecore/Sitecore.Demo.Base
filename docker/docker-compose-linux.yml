@@ -14,6 +14,7 @@ services:
         DAM_ASSETS: ${REGISTRY}community/modules/custom-dam-assets:${SITECORE_VERSION}-linux
         CMP_ASSETS: ${REGISTRY}community/modules/custom-cmp-xp-assets:${SITECORE_VERSION}-linux
         XGEN:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-linux
+        HORIZON_INTEGRATION_ASSETS: ${REGISTRY}community/modules/custom-horizon-integration-assets:${SITECORE_VERSION}-linux
     mem_limit: 4GB
     ports:
       - "44010:1433"
