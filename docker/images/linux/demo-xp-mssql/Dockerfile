@@ -34,7 +34,7 @@ COPY --from=sfmc_ce_assets /module/db /opt/wdp/sfmcce
 COPY --from=dam_assets /module/db /opt/wdp/dam
 COPY --from=cmp_assets /module/db /opt/wdp/cmp
 COPY --from=xgen_assets /module/db /opt/wdp/xgen
-COPY --from=horizon_integration_assets /module/db /opt/wdb/horizon
+COPY --from=horizon_integration_assets /module/db /opt/wdp/horizon
 COPY attach-databases.sh /opt/
 COPY install-databases.sh /opt/
 
