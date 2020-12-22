@@ -9,6 +9,8 @@ ARG CMP_ASSETS
 ARG XGEN_ASSETS
 ARG SF_CRM_ASSETS
 ARG HORIZON_INTEGRATION_ASSETS
+ARG TOOLS_ASSETS
+
 
 FROM ${DEF_ASSETS} as def_assets
 FROM ${DEF_SFDC_ASSETS} as def_sfdc_assets
@@ -19,10 +21,13 @@ FROM ${CMP_ASSETS} as cmp_assets
 FROM ${XGEN_ASSETS} as xgen_assets
 FROM ${SF_CRM_ASSETS} as sf_crm_assets
 FROM ${HORIZON_INTEGRATION_ASSETS} as horizon_integration_assets
+FROM ${TOOLS_ASSETS} as tools
 
 FROM $BASE_IMAGE as production
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+COPY --from=tools /tools/ /tools/
 
 COPY --from=def_assets /module/cm/content /inetpub/wwwroot
 COPY --from=def_sfdc_assets /module/cm/content /inetpub/wwwroot
@@ -33,3 +38,5 @@ COPY --from=cmp_assets /module/cm/content /inetpub/wwwroot
 COPY --from=xgen_assets /module/cm/content /inetpub/wwwroot
 COPY --from=sf_crm_assets /module/cm/content /inetpub/wwwroot
 COPY --from=horizon_integration_assets /module/cm/content /inetpub/wwwroot
+
+RUN icacls 'C:\inetpub\wwwroot' /grant 'IIS_IUSRS:(F)' /t | Out-Null

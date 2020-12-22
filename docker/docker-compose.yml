@@ -3,7 +3,7 @@ version: '2.4'
 services:
   mssql:
     image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-mssql:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
-    isolation: hyperv
+    isolation: ${ISOLATION}
     build:
       context: .\images\windows\demo-xp-mssql
       args:
@@ -17,7 +17,6 @@ services:
         XGEN_ASSETS:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         SF_CRM_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         HORIZON_INTEGRATION_ASSETS: ${REGISTRY}community/modules/custom-horizon-integration-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
-    mem_limit: 4GB
     ports:
       - "44010:1433"
     environment:
@@ -25,7 +24,7 @@ services:
       ACCEPT_EULA: "Y"
   cm:
     image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-cm:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
-    isolation: hyperv
+    isolation: ${ISOLATION}
     build:
       context: .\images\windows\demo-xp-cm
       args:
@@ -39,31 +38,35 @@ services:
         XGEN_ASSETS:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         SF_CRM_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         HORIZON_INTEGRATION_ASSETS: ${REGISTRY}community/modules/custom-horizon-integration-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
-    mem_limit: 4G
+        TOOLS_ASSETS: ${REGISTRY}community/modules/custom-sitecore-docker-tools-assets:${TOOLS_VERSION}-${NANOSERVER_VERSION}
     ports:
       - "44001:80"
   cd:
     image: ${REGISTRY}demo/base/lighthouse-xp1-modules-base-cd:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
-    isolation: hyperv
+    isolation: ${ISOLATION}
     build:
       context: .\images\windows\demo-xp-cd
       args:
-        BASE_IMAGE: ${REGISTRY}community/sitecore-xp1-custom-sxa-jss-ps-cd:${SITECORE_VERSION}-ltsc2019
+        BASE_IMAGE: ${REGISTRY}community/sitecore-xp1-custom-sxa-jss-ps-cd:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}
         DAM_ASSETS: ${REGISTRY}community/modules/custom-dam-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         SF_CRM_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
-    mem_limit: 4G
+        TOOLS_ASSETS: ${REGISTRY}community/modules/custom-sitecore-docker-tools-assets:${TOOLS_VERSION}-${NANOSERVER_VERSION}
     ports:
       - "44002:80"
   xdbautomationworker:
     image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-xdbautomationworker:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
+    isolation: ${ISOLATION}
     build:
       context: .\images\windows\demo-xp-xdbautomationworker
       args:
         BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sxp/sitecore-xp0-xdbautomationworker:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}
         DEF_MA_ASSETS: ${REGISTRY}community/modules/custom-def-ma-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         SFMC_BDE_MA_ASSETS: ${REGISTRY}community/modules/custom-sfmc-bde-ma-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        TOOLS_ASSETS: ${REGISTRY}community/modules/custom-sitecore-docker-tools-assets:${TOOLS_VERSION}-${NANOSERVER_VERSION}
+
   tenantservice:
     image: ${REGISTRY}demo/base/lighthouse-xp0-modules-tenant-service:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
+    isolation: ${ISOLATION}
     build:
       context: .\images\windows\demo-xp-tenantservice
       args:
@@ -71,20 +74,27 @@ services:
         SF_CRM_TS_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-ts-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         SFMC_BDE_TS_ASSETS: ${REGISTRY}community/modules/custom-sfmc-bde-ts-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
   id:
+    isolation: ${ISOLATION}
     image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-id:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
     build:
       context: .\images\windows\demo-xp-id
       args:
         BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sxp/sitecore-id:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}
+        TOOLS_ASSETS: ${REGISTRY}community/modules/custom-sitecore-docker-tools-assets:${TOOLS_VERSION}-${NANOSERVER_VERSION}
   xconnect:
     image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-xconnect:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
+    isolation: ${ISOLATION}
     build:
       context: .\images\windows\demo-xp-xconnect
       args:
         BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sxp/sitecore-xp0-xconnect:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}
+        TOOLS_ASSETS: ${REGISTRY}community/modules/custom-sitecore-docker-tools-assets:${TOOLS_VERSION}-${NANOSERVER_VERSION}
+
   xdbsearchworker:
     image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-xdbsearchworker:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
+    isolation: ${ISOLATION}
     build:
       context: .\images\windows\demo-xp-xdbsearchworker
       args:
         BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sxp/sitecore-xp0-xdbsearchworker:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}
+        TOOLS_ASSETS: ${REGISTRY}community/modules/custom-sitecore-docker-tools-assets:${TOOLS_VERSION}-${NANOSERVER_VERSION}
