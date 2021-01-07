@@ -12,7 +12,8 @@ branches:
     tag: beta
     increment: Patch
     prevent-increment-of-merged-branch-version: false
-  master:
+    is-mainline: true
+  main:
     tag: ''
     increment: Patch
     prevent-increment-of-merged-branch-version: true
@@ -23,6 +24,13 @@ branches:
     tracks-release-branches: false
     is-release-branch: false
     is-mainline: true
+  upgrade:
+    tag: vnext
+    regex: ^upgrade.*
+    tag-number-pattern: '[/-](?<number>\d+)[-/]'
+    source-branches:
+    - develop
+    is-mainline: true
   feature:
     tag: ft
     tag-number-pattern: '[/-](?<number>\d+)[-/]'
@@ -30,7 +38,8 @@ branches:
     tag: pull
     tag-number-pattern: '[/-](?<number>\d+)[-/]'
   release:
-    tag: rc
+    tag: ''
     is-release-branch: true
     increment: Inherit
+    is-mainline: true
 merge-message-formats: {}

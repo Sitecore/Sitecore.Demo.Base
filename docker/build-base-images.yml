@@ -2,211 +2,250 @@
 trigger:
   branches:
     include:
-    - develop
+      - develop
 
 resources:
-- repo: self
+  - repo: self
 
 variables:
-  GitVersion.PreReleaseLabel: ''
-  tag: '$(GitVersion.SemVer)'
-  additionalImageTags: ''
-  SITECORE_VERSION: '10.0.1'
-  TOOLS_VERSION: '10.0.1'
-  SITECORE_SHORT_VERSION: '10.0'
+  SITECORE_VERSION: "10.0.1"
+  TOOLS_VERSION: "10.0.1"
+  SITECORE_SHORT_VERSION: "10.0"
+  GitVersion.PreReleaseLabel: ""
+  tag: "$(GitVersion.SemVer)"
+  additionalImageTags: ""
+  buildLinux: true
 
 stages:
-- stage: Build
-  displayName: Build images
-  jobs:
-  - job: Build
-    timeoutInMinutes: 240
-    strategy:
-      matrix:
-        ltsc2019:
-          poolName: 'docker-ltsc2019-agents'
-          osVersion: 'ltsc2019'
-          nanoserverVersion: '1809'
-        windows2004:
-          poolName: 'docker-2004-agents'
-          osVersion: '2004'
-          nanoserverVersion: '2004'
-        20H2:
-          poolName: 'docker-20H2-agents'
-          osVersion: '2009'
-          nanoserverVersion: '2009'
-    displayName: Build
-    pool:
-      name: $(poolName)
-    steps:
-    - task: UseDotNet@2
-      inputs:
-        packageType: 'sdk'
-        version: '2.1.x'
-        installationPath: 'c:/program files/dotnet'
-        performMultiLevelLookup: true
-    - template: version.yml
-    - task: PowerShell@2
-      displayName: "Build Images"
-      inputs:
-        targetType: 'inline'
-        script: |
-          az login -u "$(sitecore.container.registry.username)" -p "$(sitecore.container.registry.password)" -t "$(sitecore.container.registry.tenant)"
-          if ("$(sitecore.container.registry)" -ne "scr.sitecore.com"){
-            az acr login -n "$(sitecore.container.registry.short)" --verbose
-          }
-          az acr login -n "$(container.registry.short)" --verbose
-          .\init-ci.ps1 `
-              -DemoTeamRegistry "$(REGISTRY)" `
-              -SitecoreRegistry "$(sitecore.container.registry)" `
-              -WindowsVersion "$(osVersion)" `
-              -SitecoreVersion "$(SITECORE_VERSION)" `
-              -IsolationMode "process"
+  - stage: Build
+    displayName: Build images
+    jobs:
+      - job: Build
+        timeoutInMinutes: 240
+        strategy:
+          matrix:
+            ltsc2019:
+              poolName: "docker-ltsc2019-agents"
+              osVersion: "ltsc2019"
+              nanoserverVersion: "1809"
+            windows2004:
+              poolName: "docker-2004-agents"
+              osVersion: "2004"
+              nanoserverVersion: "2004"
+            20H2:
+              poolName: "docker-20H2-agents"
+              osVersion: "2009"
+              nanoserverVersion: "2009"
+        displayName: Build
+        pool:
+          name: $(poolName)
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              packageType: "sdk"
+              version: "3.1.x"
+              installationPath: "c:/program files/dotnet"
+              performMultiLevelLookup: true
+          - template: version.yml
+          - task: PowerShell@2
+            displayName: "Build Images"
+            inputs:
+              targetType: "inline"
+              script: |
+                $sitecoreRegistry = "$(sitecore.container.registry)"
 
-          $env:SQL_SA_PASSWORD = "$(SQL_SA_PASSWORD)"
-          $env:BUILD_NUMBER = "$(GitVersion.SemVer)"
+                az login -u "$(sitecore.container.registry.username)" -p "$(sitecore.container.registry.password)" -t "$(sitecore.container.registry.tenant)"
 
-          .\pull-build-images.ps1
+                if ("$(Build.SourceBranch)" -match "upgrade/(?<version>\d+\.\d+\.\d+)") {
+                    $sitecoreRegistry = "$(sitecore.internal.container.registry)"
+                }
 
-          docker-compose -f docker-compose.yml build --parallel
+                if ("$sitecoreRegistry" -ne "scr.sitecore.com/"){
+                  az acr login -n "$sitecoreRegistry"
+                }
+                az acr login -n "$(container.registry.short)"
 
-          $env:BUILD_NUMBER = "$(additionalImageTags)"
-          docker-compose -f docker-compose.yml build --parallel
+                .\init-ci.ps1 `
+                    -DemoTeamRegistry "$(REGISTRY)" `
+                    -SitecoreRegistry "$sitecoreRegistry" `
+                    -WindowsVersion "$(osVersion)" `
+                    -SitecoreVersion "$(SITECORE_VERSION)" `
+                    -IsolationMode "process"
 
-          $env:SITECORE_VERSION = "$(SITECORE_SHORT_VERSION)"
-          docker-compose -f docker-compose.yml build --parallel
+                $env:SQL_SA_PASSWORD = "$(SQL_SA_PASSWORD)"
+                $env:BUILD_NUMBER = "$(GitVersion.SemVer)"
 
-          $env:BUILD_NUMBER = "$(GitVersion.SemVer)"
-          docker-compose -f docker-compose.yml build --parallel
-        workingDirectory: '$(Build.SourcesDirectory)\docker\'
+                .\pull-build-images.ps1
 
-    - task: DockerCompose@0
-      displayName: "Push Images"
-      condition: succeeded()
-      inputs:
-        containerregistrytype: 'Azure Container Registry'
-        azureSubscription: $(azure.subscription)
-        azureContainerRegistry: $(container.registry)
-        dockerComposeFile: '$(Build.SourcesDirectory)\docker\docker-compose.yml'
-        dockerComposeFileArgs: |
-          REGISTRY=$(REGISTRY)
-          SITECORE_DOCKER_REGISTRY=$(sitecore.container.registry)
-          WINDOWSSERVERCORE_VERSION=$(osVersion)
-          NANOSERVER_VERSION=$(nanoserverVersion)
-          TOOLS_VERSION=$(TOOLS_VERSION)
-          SITECORE_VERSION=$(SITECORE_VERSION)
-          SQL_SA_PASSWORD=$(SQL_SA_PASSWORD}
-          BUILD_NUMBER=$(GitVersion.SemVer)
-          ISOLATION='process'
-        action: 'Push services'
-        additionalImageTags: |
-          $(SITECORE_VERSION)-$(osVersion)-$(additionalImageTags)
-          $(SITECORE_SHORT_VERSION)-$(osVersion)-$(additionalImageTags)
-        currentWorkingDirectory: '$(Build.SourcesDirectory)\docker'
-- stage: Build_Linux_Images
-  displayName: 'Build Linux images'
-  dependsOn: []
-  jobs:
-  - job: Build_Linux_Images
-    timeoutInMinutes: 240
-    displayName: 'Build Linux Images'
-    pool:
-      name: 'docker-linux-agents'
-    steps:
-    - task: UseDotNet@2
-      inputs:
-        packageType: 'sdk'
-        version: '2.1.x'
-    - template: version.yml
-    - task: PowerShell@2
-      displayName: "Pull latest images"
-      inputs:
-        targetType: 'inline'
-        script: |
-          az login -u "$(sitecore.container.registry.username)" -p "$(sitecore.container.registry.password)" -t "$(sitecore.container.registry.tenant)"
-          if ("$(sitecore.container.registry)" -ne "scr.sitecore.com"){
-            az acr login -n "$(sitecore.container.registry.short)" --verbose
-          }
-          az acr login -n "$(container.registry.short)" --verbose
-          ./pull-linux-build-images.ps1
+                # Set up variable to track if we're building feature branch or "primary" branches
+                # Only build for additionalImageTags if source branch matches a primary branch
 
-        pwsh: true
-        workingDirectory: '$(Build.SourcesDirectory)/docker'
-    - task: DockerCompose@0
-      displayName: "Docker Compose Build"
-      condition: succeeded()
-      inputs:
-        containerregistrytype: 'Azure Container Registry'
-        azureSubscription: '$(azure.subscription)'
-        azureContainerRegistry: '$(container.registry)'
-        dockerComposeFile: 'docker/docker-compose-linux.yml'
-        dockerComposeFileArgs: |
-          REGISTRY=$(REGISTRY)
-          SITECORE_DOCKER_REGISTRY=$(sitecore.container.registry)
-          WINDOWSSERVERCORE_VERSION=$(WINDOWSSERVERCORE_VERSION)
-          NANOSERVER_VERSION=$(NANOSERVER_VERSION)
-          SITECORE_VERSION=$(SITECORE_VERSION)
-          SQL_SA_PASSWORD=$(SQL_SA_PASSWORD}
-          BUILD_NUMBER=$(GitVersion.SemVer)
-        action: 'Build services'
-        additionalImageTags: |
-          $(SITECORE_VERSION)-linux-$(additionalImageTags)
-          $(SITECORE_SHORT_VERSION)-linux-$(additionalImageTags)
-          $(SITECORE_SHORT_VERSION)-linux-$(GitVersion.SemVer)
-        arguments: '-m 2G --parallel'
-        currentWorkingDirectory: '$(Build.SourcesDirectory)/docker/'
+                $primaryBuild = $(if ([string]::IsNullOrEmpty("$(additionalImageTags)")) { $false } else { $true })
+                echo "##vso[task.setvariable variable=primaryBuild]$primaryBuild"
 
-    - task: DockerCompose@0
-      displayName: "Push Images"
-      condition: succeeded()
-      inputs:
-        containerregistrytype: 'Azure Container Registry'
-        azureSubscription: $(azure.subscription)
-        azureContainerRegistry: $(container.registry)
-        dockerComposeFile: 'docker/docker-compose-linux.yml'
-        dockerComposeFileArgs: |
-          REGISTRY=$(REGISTRY)
-          SITECORE_DOCKER_REGISTRY=$(sitecore.container.registry)
-          WINDOWSSERVERCORE_VERSION=$(WINDOWSSERVERCORE_VERSION)
-          NANOSERVER_VERSION=$(NANOSERVER_VERSION)
-          SITECORE_VERSION=$(SITECORE_VERSION)
-          SQL_SA_PASSWORD=$(SQL_SA_PASSWORD}
-          BUILD_NUMBER=$(GitVersion.SemVer)
-        action: 'Push services'
-        additionalImageTags: |
-          $(SITECORE_VERSION)-linux-$(additionalImageTags)
-          $(SITECORE_SHORT_VERSION)-linux-$(additionalImageTags)
-          $(SITECORE_SHORT_VERSION)-linux-$(GitVersion.SemVer)
-        currentWorkingDirectory: '$(Build.SourcesDirectory)/docker/'
+                # Build with full Sitecore version and SemVer
+                docker-compose -f docker-compose.yml build --parallel
+                docker-compose -f docker-compose.yml push
 
-- stage: Trigger_Harbor_Push
-  dependsOn:
-  - Build
-  - Build_Linux_Images
-  condition: and(succeeded('Build'), succeeded('Build_Linux_Images'),or( eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['Build.SourceBranch'], 'refs/heads/main')))
-  jobs:
-    - job: Harbor_Push
-      displayName: 'Harbor Push'
-      steps:
-      - template: version.yml
-      - task: TriggerBuild@3
-        displayName: "Trigger Harbor Push"
-        inputs:
-          definitionIsInCurrentTeamProject: true
-          buildDefinition: '103'
-          queueBuildForUserThatTriggeredBuild: true
-          ignoreSslCertificateErrors: false
-          useSameSourceVersion: false
-          useCustomSourceVersion: false
-          useSameBranch: false
-          branchToUse: 'main'
-          waitForQueuedBuildsToFinish: false
-          storeInEnvironmentVariable: false
-          buildParameters: 'namespace: demo, groupName: demoBase, tag: $(GitVersion.SemVer)'
-          authenticationMethod: 'Personal Access Token'
-          password: '$(System.AccessToken)'
-          enableBuildInQueueCondition: false
-          dependentOnSuccessfulBuildCondition: false
-          dependentOnFailedBuildCondition: false
-          checkbuildsoncurrentbranch: false
-          failTaskIfConditionsAreNotFulfilled: false
+                if ($primaryBuild) {
+                  $env:BUILD_NUMBER = "$(additionalImageTags)"
+                  docker-compose -f docker-compose.yml build --parallel
+                  docker-compose -f docker-compose.yml push
+                }
+                $env:SITECORE_VERSION = "$(SITECORE_SHORT_VERSION)"
+
+                if ($primaryBuild) { # Build additionalImageTags with 2-digit Sitecore version
+                  docker-compose -f docker-compose.yml build --parallel
+                  docker-compose -f docker-compose.yml push
+                }
+
+                $env:BUILD_NUMBER = "$(GitVersion.SemVer)" # Reset the build number to build with 2-digit Siteocore version
+                docker-compose -f docker-compose.yml build --parallel
+                docker-compose -f docker-compose.yml push
+
+              workingDirectory: '$(Build.SourcesDirectory)\docker\'
+  - stage: Build_Linux_Images
+    condition: eq(variables.buildLinux, true)
+    displayName: "Build Linux images"
+    dependsOn: []
+    jobs:
+      - job: Build_Linux_Images
+        timeoutInMinutes: 240
+        displayName: "Build Linux Images"
+        pool:
+          name: "docker-linux-agents"
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              packageType: "sdk"
+              version: "3.1.x"
+          - template: version.yml
+          - task: PowerShell@2
+            displayName: "Pull latest images"
+            inputs:
+              targetType: "inline"
+              script: |
+                $sitecoreRegistry = "$(sitecore.container.registry)"
+
+                az login -u "$(sitecore.container.registry.username)" -p "$(sitecore.container.registry.password)" -t "$(sitecore.container.registry.tenant)"
+
+                if ("$(Build.SourceBranch)" -match "upgrade/(?<version>\d+\.\d+\.\d+)") {
+                    $sitecoreRegistry = "$(sitecore.internal.container.registry)"
+                }
+
+                if ("$sitecoreRegistry" -ne "scr.sitecore.com/"){
+                  az acr login -n "$sitecoreRegistry"
+                }
+                az acr login -n "$(container.registry.short)"
+
+                ./init-ci.ps1 `
+                    -DemoTeamRegistry "$(REGISTRY)" `
+                    -SitecoreRegistry "$sitecoreRegistry" `
+                    -SitecoreVersion "$(SITECORE_VERSION)" `
+                    -IsolationMode "default"
+                ./pull-linux-build-images.ps1
+                # Set up variable to track if we're building feature branch or "primary" branches
+                # Only build for additionalImageTags if source branch matches a primary branch
+
+                $primaryBuild = $(if ([string]::IsNullOrEmpty("$(additionalImageTags)")) { $false } else { $true })
+                echo "##vso[task.setvariable variable=primaryBuild]$primaryBuild"
+
+                $dockerComposeFile = Join-Path "$(Build.SourcesDirectory)" "docker/docker-compose-linux.yml"
+                # Build with full Sitecore version and SemVer
+                docker-compose -f $dockerComposeFile build --parallel
+                docker-compose -f $dockerComposeFile push
+
+                if ($primaryBuild) {
+                  $env:BUILD_NUMBER = "$(additionalImageTags)"
+                  docker-compose -f $dockerComposeFile build --parallel
+                  docker-compose -f $dockerComposeFile push
+                }
+                $env:SITECORE_VERSION = "$(SITECORE_SHORT_VERSION)"
+
+                if ($primaryBuild) { # Build additionalImageTags with 2-digit Sitecore version
+                  docker-compose -f $dockerComposeFile build --parallel
+                  docker-compose -f $dockerComposeFile push
+                }
+
+                $env:BUILD_NUMBER = "$(GitVersion.SemVer)" # Reset the build number to build with 2-digit Siteocore version
+                docker-compose -f $dockerComposeFile build --parallel
+                docker-compose -f $dockerComposeFile push
+              pwsh: true
+              workingDirectory: "$(Build.SourcesDirectory)/docker"
+          # - task: DockerCompose@0
+          #   displayName: "Docker Compose Build"
+          #   condition: succeeded()
+          #   inputs:
+          #     containerregistrytype: "Azure Container Registry"
+          #     azureSubscription: "$(azure.subscription)"
+          #     azureContainerRegistry: "$(container.registry)"
+          #     dockerComposeFile: "docker/docker-compose-linux.yml"
+          #     dockerComposeFileArgs: |
+          #       REGISTRY=$(REGISTRY)
+          #       SITECORE_DOCKER_REGISTRY=$(sitecore.container.registry)
+          #       WINDOWSSERVERCORE_VERSION=$(WINDOWSSERVERCORE_VERSION)
+          #       NANOSERVER_VERSION=$(NANOSERVER_VERSION)
+          #       SITECORE_VERSION=$(SITECORE_VERSION)
+          #       SQL_SA_PASSWORD=$(SQL_SA_PASSWORD}
+          #       BUILD_NUMBER=$(GitVersion.SemVer)
+          #     action: "Build services"
+          #     additionalImageTags: |
+          #       $(SITECORE_VERSION)-linux-$(additionalImageTags)
+          #       $(SITECORE_SHORT_VERSION)-linux-$(additionalImageTags)
+          #       $(SITECORE_SHORT_VERSION)-linux-$(GitVersion.SemVer)
+          #     arguments: "-m 2G --parallel"
+          #     currentWorkingDirectory: "$(Build.SourcesDirectory)/docker/"
+          # - task: DockerCompose@0
+          #   displayName: "Push Images"
+          #   condition: succeeded()
+          #   inputs:
+          #     containerregistrytype: "Azure Container Registry"
+          #     azureSubscription: $(azure.subscription)
+          #     azureContainerRegistry: $(container.registry)
+          #     dockerComposeFile: "docker/docker-compose-linux.yml"
+          #     dockerComposeFileArgs: |
+          #       REGISTRY=$(REGISTRY)
+          #       SITECORE_DOCKER_REGISTRY=$(sitecore.container.registry)
+          #       WINDOWSSERVERCORE_VERSION=$(WINDOWSSERVERCORE_VERSION)
+          #       NANOSERVER_VERSION=$(NANOSERVER_VERSION)
+          #       SITECORE_VERSION=$(SITECORE_VERSION)
+          #       SQL_SA_PASSWORD=$(SQL_SA_PASSWORD}
+          #       BUILD_NUMBER=$(GitVersion.SemVer)
+          #     action: "Push services"
+          #     additionalImageTags: |
+          #       $(SITECORE_VERSION)-linux-$(additionalImageTags)
+          #       $(SITECORE_SHORT_VERSION)-linux-$(additionalImageTags)
+          #       $(SITECORE_SHORT_VERSION)-linux-$(GitVersion.SemVer)
+          #     currentWorkingDirectory: "$(Build.SourcesDirectory)/docker/"
+
+  - stage: Trigger_Harbor_Push
+    dependsOn:
+      - Build
+      - Build_Linux_Images
+    condition: and(succeeded('Build'), succeeded('Build_Linux_Images'),or( eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['Build.SourceBranch'], 'refs/heads/main')))
+    jobs:
+      - job: Harbor_Push
+        displayName: "Harbor Push"
+        steps:
+          - template: version.yml
+          - task: TriggerBuild@3
+            displayName: "Trigger Harbor Push"
+            inputs:
+              definitionIsInCurrentTeamProject: true
+              buildDefinition: "103"
+              queueBuildForUserThatTriggeredBuild: true
+              ignoreSslCertificateErrors: false
+              useSameSourceVersion: false
+              useCustomSourceVersion: false
+              useSameBranch: false
+              branchToUse: "main"
+              waitForQueuedBuildsToFinish: false
+              storeInEnvironmentVariable: false
+              buildParameters: "namespace: demo, groupName: demoBase, tag: $(GitVersion.SemVer)"
+              authenticationMethod: "Personal Access Token"
+              password: "$(System.AccessToken)"
+              enableBuildInQueueCondition: false
+              dependentOnSuccessfulBuildCondition: false
+              dependentOnFailedBuildCondition: false
+              checkbuildsoncurrentbranch: false
+              failTaskIfConditionsAreNotFulfilled: false
