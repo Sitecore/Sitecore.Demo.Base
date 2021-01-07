@@ -67,8 +67,8 @@ if ([string]::IsNullOrEmpty($DemoTeamRegistry)) {
     }
 }
 $NanoserverVersion = $(if ($WindowsVersion -eq "ltsc2019") {"1809"} else {$WindowsVersion})
-Set-DockerComposeEnvFileVariable "REGISTRY" -Value $DemoTeamRegistry
-Set-DockerComposeEnvFileVariable "SITECORE_DOCKER_REGISTRY" -Value $SitecoreRegistry
+Set-DockerComposeEnvFileVariable "REGISTRY" -Value $($DemoTeamRegistry.TrimEnd('/') + "/")
+Set-DockerComposeEnvFileVariable "SITECORE_DOCKER_REGISTRY" -Value $($SitecoreRegistry.TrimEnd('/') + "/")
 Set-DockerComposeEnvFileVariable "WINDOWSSERVERCORE_VERSION" -Value $WindowsVersion
 Set-DockerComposeEnvFileVariable "NANOSERVER_VERSION" -Value $NanoserverVersion
 Set-DockerComposeEnvFileVariable "SITECORE_VERSION" -Value $SitecoreVersion
