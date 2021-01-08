@@ -121,7 +121,7 @@ stages:
               version: "3.1.x"
           - template: version.yml
           - task: PowerShell@2
-            displayName: "Pull latest images"
+            displayName: "Build Linux Images"
             inputs:
               targetType: "inline"
               script: |
@@ -149,7 +149,7 @@ stages:
 
                 $primaryBuild = $(if ([string]::IsNullOrEmpty("$(additionalImageTags)")) { $false } else { $true })
                 echo "##vso[task.setvariable variable=primaryBuild]$primaryBuild"
-
+                $env:BUILD_NUMBER = "$(GitVersion.SemVer)"
                 $dockerComposeFile = Join-Path "$(Build.SourcesDirectory)" "docker/docker-compose-linux.yml"
                 # Build with full Sitecore version and SemVer
                 docker-compose -f $dockerComposeFile build --parallel
