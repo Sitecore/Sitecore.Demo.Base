@@ -39,4 +39,6 @@ COPY --from=xgen_assets /module/cm/content /inetpub/wwwroot
 COPY --from=sf_crm_assets /module/cm/content /inetpub/wwwroot
 COPY --from=horizon_integration_assets /module/cm/content /inetpub/wwwroot
 
-RUN icacls 'C:\inetpub\wwwroot' /grant 'IIS_IUSRS:(F)' /t | Out-Null
+# https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/icacls
+# (OI) = directories object inherit, (CI) = directories container inherit, F = Full access
+RUN icacls 'C:\inetpub\wwwroot' /grant 'IIS_IUSRS:(OI)(CI)F' /t | Out-Null

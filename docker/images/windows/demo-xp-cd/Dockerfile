@@ -17,4 +17,6 @@ COPY --from=sf_crm_assets /module/cm/content /inetpub/wwwroot
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-RUN icacls 'C:\inetpub\wwwroot' /grant 'IIS_IUSRS:(F)' /t | Out-Null
+# https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/icacls
+# (OI) = directories object inherit, (CI) = directories container inherit, F = Full access
+RUN icacls 'C:\inetpub\wwwroot' /grant 'IIS_IUSRS:(OI)(CI)F' /t | Out-Null
