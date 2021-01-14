@@ -9,6 +9,8 @@ ARG CMP_ASSETS
 ARG XGEN_ASSETS
 ARG SF_CRM_ASSETS
 ARG HORIZON_INTEGRATION_ASSETS
+ARG COVEO_ASSETS
+ARG COVEO_SXA_ASSETS
 
 FROM ${DEF_ASSETS} as def_assets
 FROM ${DEF_SFDC_ASSETS} as def_sfdc_assets
@@ -19,6 +21,9 @@ FROM ${CMP_ASSETS} as cmp_assets
 FROM ${XGEN_ASSETS} as xgen_assets
 FROM ${SF_CRM_ASSETS} as sf_crm_assets
 FROM ${HORIZON_INTEGRATION_ASSETS} as horizon_integration_assets
+FROM ${COVEO_ASSETS} as coveo_assets
+FROM ${COVEO_SXA_ASSETS} as coveo_sxa_assets
+
 FROM $BASE_IMAGE as modules
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
@@ -32,6 +37,8 @@ COPY --from=cmp_assets /module/db /module_data/cmp_assets
 COPY --from=xgen_assets /module/db /module_data/xgen_assets
 COPY --from=sf_crm_assets /module/db /module_data/sf_crm_assets
 COPY --from=horizon_integration_assets /module/db /module_data/horizon_integration_assets
+COPY --from=coveo_assets /module/db /module_data/coveo_assets
+COPY --from=coveo_sxa_assets /module/db /module_data/coveo_sxa_assets
 
-RUN $modules = @('def_assets', 'def_sfdc_assets', 'sfmc_bde_assets', 'sfmc_ce_assets', 'dam_assets', 'cmp_assets', 'xgen_assets', 'sf_crm_assets', 'horizon_integration_assets'); `
+RUN $modules = @('def_assets', 'def_sfdc_assets', 'sfmc_bde_assets', 'sfmc_ce_assets', 'dam_assets', 'cmp_assets', 'xgen_assets', 'sf_crm_assets', 'horizon_integration_assets', 'coveo_assets', 'coveo_sxa_assets'); `
     foreach($module in $modules) { C:\DeployDatabases.ps1 -ResourcesDirectory /module_data/$module; Remove-Item -Path /module_data/$module -Recurse -Force; }

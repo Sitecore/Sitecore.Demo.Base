@@ -143,7 +143,9 @@ stages:
                     -SitecoreRegistry "$sitecoreRegistry" `
                     -SitecoreVersion "$(SITECORE_VERSION)" `
                     -IsolationMode "default"
+
                 ./pull-linux-build-images.ps1
+
                 # Set up variable to track if we're building feature branch or "primary" branches
                 # Only build for additionalImageTags if source branch matches a primary branch
 
@@ -151,6 +153,7 @@ stages:
                 echo "##vso[task.setvariable variable=primaryBuild]$primaryBuild"
                 $env:BUILD_NUMBER = "$(GitVersion.SemVer)"
                 $dockerComposeFile = Join-Path "$(Build.SourcesDirectory)" "docker/docker-compose-linux.yml"
+
                 # Build with full Sitecore version and SemVer
                 docker-compose -f $dockerComposeFile build --parallel
                 docker-compose -f $dockerComposeFile push
