@@ -155,6 +155,8 @@ spec:
           value: "http://cm.{{ .Release.Namespace }}.svc.cluster.local"
         - name: SOLR_CORE_PREFIX_NAME
           value: sitecore
+        - name: COVEO_SERVER_URL
+          value: "http://cd.{{ .Release.Namespace }}.svc.cluster.local/"
         {{- range .Values.env }}
         - name: {{ .name }}
           value: {{ tpl .value $ }}

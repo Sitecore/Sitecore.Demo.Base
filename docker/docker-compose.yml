@@ -17,11 +17,15 @@ services:
         XGEN_ASSETS:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         SF_CRM_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         HORIZON_INTEGRATION_ASSETS: ${REGISTRY}community/modules/custom-horizon-integration-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        COVEO_ASSETS: ${REGISTRY}community/modules/custom-coveo508581-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        COVEO_SXA_ASSETS: ${REGISTRY}community/modules/custom-coveo508581-sxa-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
     ports:
       - "44010:1433"
     environment:
       SA_PASSWORD: ${SQL_SA_PASSWORD}
+      SITECORE_ADMIN_PASSWORD: "b"
       ACCEPT_EULA: "Y"
+      SQL_SERVER: mssql
   cm:
     image: ${REGISTRY}demo/base/lighthouse-xp0-modules-base-cm:${SITECORE_VERSION}-${WINDOWSSERVERCORE_VERSION}-${BUILD_NUMBER}
     isolation: ${ISOLATION}
@@ -39,6 +43,8 @@ services:
         SF_CRM_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         HORIZON_INTEGRATION_ASSETS: ${REGISTRY}community/modules/custom-horizon-integration-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         TOOLS_ASSETS: ${REGISTRY}community/modules/custom-sitecore-docker-tools-assets:${TOOLS_VERSION}-${NANOSERVER_VERSION}
+        COVEO_ASSETS: ${REGISTRY}community/modules/custom-coveo508581-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        COVEO_SXA_ASSETS: ${REGISTRY}community/modules/custom-coveo508581-sxa-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
     ports:
       - "44001:80"
   cd:
@@ -51,6 +57,8 @@ services:
         DAM_ASSETS: ${REGISTRY}community/modules/custom-dam-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         SF_CRM_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         TOOLS_ASSETS: ${REGISTRY}community/modules/custom-sitecore-docker-tools-assets:${TOOLS_VERSION}-${NANOSERVER_VERSION}
+        COVEO_ASSETS: ${REGISTRY}community/modules/custom-coveo508581-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        COVEO_SXA_ASSETS: ${REGISTRY}community/modules/custom-coveo508581-sxa-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
     ports:
       - "44002:80"
   xdbautomationworker:

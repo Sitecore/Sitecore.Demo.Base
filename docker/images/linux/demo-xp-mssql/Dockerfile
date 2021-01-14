@@ -7,6 +7,8 @@ ARG DAM_ASSETS
 ARG CMP_ASSETS
 ARG XGEN_ASSETS
 ARG HORIZON_INTEGRATION_ASSETS
+ARG COVEO_ASSETS
+ARG COVEO_SXA_ASSETS
 
 FROM ${DEF_ASSETS} as def_assets
 FROM ${DEF_SFDC_ASSETS} as def_sfdc_assets
@@ -16,6 +18,8 @@ FROM ${DAM_ASSETS} as dam_assets
 FROM ${CMP_ASSETS} as cmp_assets
 FROM ${XGEN_ASSETS} as xgen_assets
 FROM ${HORIZON_INTEGRATION_ASSETS} as horizon_integration_assets
+FROM ${COVEO_ASSETS} as coveo_assets
+FROM ${COVEO_SXA_ASSETS} as coveo_sxa_assets
 
 FROM $BASE_IMAGE as builder
 
@@ -35,6 +39,8 @@ COPY --from=dam_assets /module/db /opt/wdp/dam
 COPY --from=cmp_assets /module/db /opt/wdp/cmp
 COPY --from=xgen_assets /module/db /opt/wdp/xgen
 COPY --from=horizon_integration_assets /module/db /opt/wdp/horizon
+COPY --from=coveo_assets /module/db /opt/wdp/coveo
+COPY --from=coveo_sxa_assets /module/db /opt/wdp/coveosxa
 COPY attach-databases.sh /opt/
 COPY install-databases.sh /opt/
 
@@ -53,7 +59,9 @@ RUN chmod +x /opt/*.sh \
     && ./opt/install-databases.sh /opt/wdp/sfmcde \
     && ./opt/install-databases.sh /opt/wdp/sfmcce \
     && ./opt/install-databases.sh /opt/wdp/xgen \
-    && ./opt/install-databases.sh /opt/wdp/horizon
+    && ./opt/install-databases.sh /opt/wdp/horizon \
+    && ./opt/install-databases.sh /opt/wdp/coveo \
+    && ./opt/install-databases.sh /opt/wdp/coveosxa
 
 FROM $BASE_IMAGE as production
 

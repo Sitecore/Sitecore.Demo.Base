@@ -10,7 +10,8 @@ ARG XGEN_ASSETS
 ARG SF_CRM_ASSETS
 ARG HORIZON_INTEGRATION_ASSETS
 ARG TOOLS_ASSETS
-
+ARG COVEO_ASSETS
+ARG COVEO_SXA_ASSETS
 
 FROM ${DEF_ASSETS} as def_assets
 FROM ${DEF_SFDC_ASSETS} as def_sfdc_assets
@@ -22,6 +23,8 @@ FROM ${XGEN_ASSETS} as xgen_assets
 FROM ${SF_CRM_ASSETS} as sf_crm_assets
 FROM ${HORIZON_INTEGRATION_ASSETS} as horizon_integration_assets
 FROM ${TOOLS_ASSETS} as tools
+FROM ${COVEO_ASSETS} as coveo_assets
+FROM ${COVEO_SXA_ASSETS} as coveo_sxa_assets
 
 FROM $BASE_IMAGE as production
 
@@ -38,6 +41,8 @@ COPY --from=cmp_assets /module/cm/content /inetpub/wwwroot
 COPY --from=xgen_assets /module/cm/content /inetpub/wwwroot
 COPY --from=sf_crm_assets /module/cm/content /inetpub/wwwroot
 COPY --from=horizon_integration_assets /module/cm/content /inetpub/wwwroot
+COPY --from=coveo_assets /module/cm/content /inetpub/wwwroot
+COPY --from=coveo_sxa_assets /module/cm/content /inetpub/wwwroot
 
 # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/icacls
 # (OI) = directories object inherit, (CI) = directories container inherit, F = Full access

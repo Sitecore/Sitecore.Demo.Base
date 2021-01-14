@@ -51,6 +51,9 @@ sitecore-xp0:
       password: ""
       disable:
         default: 'FALSE'
+    coveo:
+      admin:
+        username: ""
     dam:
       url: ""
     exm:
@@ -85,6 +88,9 @@ sitecore-xp0:
       - name: BOOT_OVERRIDE_SCRIPTS
         value: |-
           "{{ .Values.boot.overrideScripts }}"
+      - name: COVEO_ADMIN_USER_NAME
+        value: |-
+          "{{ .Values.coveo.admin.username }}"
   xdbautomationworker:
     env:
       - name: DUMMY_VARIABLE
