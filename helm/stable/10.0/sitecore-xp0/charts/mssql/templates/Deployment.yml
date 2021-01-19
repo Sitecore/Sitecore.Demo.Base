@@ -15,6 +15,8 @@ spec:
     metadata:
       labels:
         {{- include "mssql.selectorLabels" . | nindent 8 }}
+      annotations:
+        "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
