@@ -53,7 +53,7 @@ spec:
               value: "http://ps.{{ .Release.Namespace }}.svc.cluster.local"
             - name: HOST_ID
               value: "http://id.{{ .Release.Namespace }}.svc.cluster.local"
-            - name: ADMIN_USER_NAME 
+            - name: ADMIN_USER_NAME
               value: "{{ .Values.admin.username }}"
             - name: ADMIN_PASSWORD
               value: "{{ .Values.admin.password }}"
@@ -63,6 +63,16 @@ spec:
               value: "{{ .Values.dam.url }}"
             - name: INIT_CONTEXT
               value: Data Source=$(Database_Server);Initial Catalog=platform_init_ready;User ID=$(Database_Username);Password=$(Database_Password);
+            - name: COVEO_ORGANIZATION_ID
+              value: "{{ .Values.coveo.organizationId }}"
+            - name: COVEO_API_KEY
+              value: "{{ .Values.coveo.apiKey }}"
+            - name: COVEO_SEARCH_API_KEY
+              value: "{{ .Values.coveo.searchApiKey }}"
+            - name: COVEO_FARM_NAME
+              value: "{{ .Values.coveo.farmName }}"
+            - name: COVEO_ADMIN_USER_NAME
+              value: "{{ .Values.coveo.admin.username }}"
           ports:
             - name: http
               containerPort: 80
