@@ -272,6 +272,8 @@ spec:
             secretKeyRef:
               name: google-api-key
               key: google-apikey.txt
+        - name: HOST_CD
+          value: "http://cd"
         - name: COVEO_SERVER_URL
           value: "http://cm.{{ .Release.Namespace }}.svc.cluster.local/"
         {{- range .Values.env }}

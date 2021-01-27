@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  
+
 pullPolicy: Always
 
 imagePullSecrets: []
@@ -71,3 +71,11 @@ admin:
 
 dam:
   url: ""
+
+coveo:
+  admin:
+    username: ""
+  organizationId: ""
+  apiKey: ""
+  searchApiKey: ""
+  farmName: ""
