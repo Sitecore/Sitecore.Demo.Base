@@ -9,6 +9,8 @@ ARG CMP_ASSETS
 ARG XGEN_ASSETS
 ARG SF_CRM_ASSETS
 ARG HORIZON_INTEGRATION_ASSETS
+ARG HORIZON_ZENITH_ASSETS
+ARG HORIZON_INSIGHTS_ASSETS
 ARG TOOLS_ASSETS
 ARG COVEO_ASSETS
 ARG COVEO_SXA_ASSETS
@@ -22,6 +24,8 @@ FROM ${CMP_ASSETS} as cmp_assets
 FROM ${XGEN_ASSETS} as xgen_assets
 FROM ${SF_CRM_ASSETS} as sf_crm_assets
 FROM ${HORIZON_INTEGRATION_ASSETS} as horizon_integration_assets
+FROM ${HORIZON_ZENITH_ASSETS} as horizon_zenith_assets
+FROM ${HORIZON_INSIGHTS_ASSETS} as horizon_insights_assets
 FROM ${TOOLS_ASSETS} as tools
 FROM ${COVEO_ASSETS} as coveo_assets
 FROM ${COVEO_SXA_ASSETS} as coveo_sxa_assets
@@ -41,6 +45,8 @@ COPY --from=cmp_assets /module/cm/content /inetpub/wwwroot
 COPY --from=xgen_assets /module/cm/content /inetpub/wwwroot
 COPY --from=sf_crm_assets /module/cm/content /inetpub/wwwroot
 COPY --from=horizon_integration_assets /module/cm/content /inetpub/wwwroot
+COPY --from=horizon_zenith_assets /module/cm/content /inetpub/wwwroot
+COPY --from=horizon_insights_assets /module/cm/content /inetpub/wwwroot
 COPY --from=coveo_assets /module/cm/content /inetpub/wwwroot
 COPY --from=coveo_sxa_assets /module/cm/content /inetpub/wwwroot
 
