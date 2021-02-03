@@ -42,6 +42,8 @@ services:
         XGEN_ASSETS:  ${REGISTRY}community/modules/custom-xgenerator-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         SF_CRM_ASSETS: ${REGISTRY}community/modules/custom-sfcrm-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         HORIZON_INTEGRATION_ASSETS: ${REGISTRY}community/modules/custom-horizon-integration-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        HORIZON_ZENITH_ASSETS: ${REGISTRY}community/modules/custom-horizon-zenith-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
+        HORIZON_INSIGHTS_ASSETS: ${REGISTRY}community/modules/custom-horizon-insights-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         TOOLS_ASSETS: ${REGISTRY}community/modules/custom-sitecore-docker-tools-assets:${TOOLS_VERSION}-${NANOSERVER_VERSION}
         COVEO_ASSETS: ${REGISTRY}community/modules/custom-coveo508581-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
         COVEO_SXA_ASSETS: ${REGISTRY}community/modules/custom-coveo508581-sxa-assets:${SITECORE_VERSION}-${NANOSERVER_VERSION}
